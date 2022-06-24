@@ -1,0 +1,92 @@
+--- 
+title: "Õhuniiskuse karakteristikute määramine"
+subtitle: "Viies laboratoorne töö soojusõpetuses"
+author: "peacecop kalmer:"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: article
+papersize: a4
+fontsize: 12pt
+classoption: onecolumn, twoside
+sep: ", "
+geometry:  left=3cm, right=2cm, top=2cm, bottom=3cm
+linestretch: 1.5
+lof: yes
+lot: yes
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::bs4_book,
+  set in the _output.yml file.
+biblio-style: apalike
+# csl: chicago-fullnote-bibliography.csl
+graphics: yes
+lang: et
+
+---
+
+# miski
+
+```{r setup, echo=FALSE, message=FALSE}
+# example R options set globally
+options(bookdown.render.file_scope = FALSE)
+
+# example chunk options set globally
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  echo = TRUE,
+  out.width = "\\textwidth",
+  out.height = "\\textheight",
+  out.extra = "keepaspectratio=true",
+  fig.margin = TRUE,
+  attr.source = '.numberLines'
+)
+
+if (!require("librarian")) {
+  install.packages("librarian", dependencies = TRUE)
+}
+
+library(librarian)
+
+include_svg = function(path) {
+
+  if (knitr::is_latex_output()) {
+    output = xfun::with_ext(path, 'pdf')
+    # you can compare the timestamp of pdf against svg to avoid conversion if necessary
+    system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+  } else {
+    output = path
+  }
+  
+  knitr::include_graphics(output)
+}
+
+if (!require("librarian")) {
+  install.packages("librarian", dependencies = TRUE)
+}
+
+library(librarian)
+
+print_table <- function(data_frame, caption, digits = 2) {
+
+  if (!is.null(knitr::opts_knit$get('rmarkdown.pandoc.to')) && (knitr::opts_knit$get('rmarkdown.pandoc.to') == "docx")) {
+    librarian::shelf("flextable")
+    table <- (flextable(data_frame))
+  } else {
+    librarian::shelf("kableExtra")
+
+    table <- (kable(data_frame, booktabs = TRUE, escape = FALSE, caption = caption, digits = digits) %>%
+      kable_styling(bootstrap_options = c("striped", "bordered", "condensed", "responsive", "hover"), latex_options = c("scale_down", "striped"), full_width = TRUE))
+  } 
+
+  return(table)
+}
+
+```
+
+```{=tex}
+\sisetup{inter-unit-product = \ensuremath { { } \times { } } }
+```
