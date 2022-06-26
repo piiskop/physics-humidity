@@ -1,1 +1,21 @@
 # Teooria
+
+Kui õhk oleks täiesti kuiv, siis see tähendaks, et selles puuduks veeaur. Kui õhk on täiesti märk, siis tähendab, et see on veeaurust nii küllastunud, et õhku või sellega kokkupuutes olevale õhust jahedamale pinnale tekivad tilgad. Absoluutne õhuniiskus tähendab, kui palju absoluutarvuliselt on õhus veeauru. Suhteline õhuniiskus tähendab, kui palju on õhus veeauru suhteliselt. Eelnevas kuiva õhu näites on õhus veeauru 0, täiesti märjas ehk veeaurust küllastunud õhus 1.
+
+Joonisel \@ref(fig:relative-humidity) on näidatud, kuidas suhteline õhuniiskus ja õhutemperatuur on omavahel seotud. Kuum õhk mahutab rohkem veeauru kui jahe õhk, sest selles on õhu osakesed üksteisest kaugemal ja rohkem on ruumi veeauru osakeste jaoks nende vahel. Seega, kui veeauru kogus õhus on muutumatu, on veeauru kuumas õhus suhteliselt vähem kui jahedas õhus. Kui veeauru on õhus 1, siis on õhk veeaurust küllastunud ja sellesse rohkem veeauru ei mahu, mis tähendab, et edasine õhu jahtumine toob kaasa veeauru kondenseerumise. Olek, milles õhk on veeaurust küllastunud, on seega kastepunkt.
+
+(ref:relative-humidity) @news_september
+
+```{r label = "relative-humidity", fig.cap = "Suhtelise õhuniiskuse ja õhu temperatuuri seos ((ref:relative-humidity)).", fig.margin = TRUE}
+include_svg("relative-humidity.webp")
+```
+
+Õhuniiskust saab mõõta psühromeetriga. Viimases on kaks termomeetrit: üks kuiva, teine niiske õhu jaoks. Kuiva õhu termomeetri näitu ei manipuleerita. Küll aga tehakse niiskeks teise termomeetri sensor, misjärel hakkab selle termomeetri näit vähenema, sest see niiskus aurub ja aurumisel võetakse ümbritsevast keskkonnast soojusenergiat, mistõttu ümbritsev keskkond jahtub. See jahtumine toimub siiski ainult selle termomeetri sensori ümber ja ei mõjuta teise termomeetri sensori ümbrust. Niiske termomeetri näit langeb, kuni see enam langeda ei saa, st on saavutatud olek, milles edasine aurumine ja kondenseerumine üksteist tasakaalustavad - on jõutud kastepunktini. Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt diagrammilt \@ref(fig:psychrometric-diagram) vaadata õhuniiskuse, sest eri temperatuuril on õhu võime endasse veeauru mahutada erinev ja need väärtused on katseliselt välja arvutatud.
+
+(ref:psychrometric-chart) @psychrometric-chart
+
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '\\textheight'}
+include_svg("0000Psych11x17US_SI_logos.pdf")
+```
+
+

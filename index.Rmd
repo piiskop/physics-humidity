@@ -7,13 +7,14 @@ site: bookdown::bookdown_site
 documentclass: article
 papersize: a4
 fontsize: 12pt
+mainfont: Times New Roman
 classoption: onecolumn, twoside
 sep: ", "
 geometry:  left=3cm, right=2cm, top=2cm, bottom=3cm
 linestretch: 1.5
 lof: yes
 lot: yes
-bibliography: [book.bib, packages.bib]
+bibliography: [book.bib]
 # url: your book url like https://bookdown.org/yihui/bookdown
 # cover-image: path to the social sharing image like images/cover.jpg
 description: |
@@ -21,13 +22,12 @@ description: |
   The HTML output format for this example is bookdown::bs4_book,
   set in the _output.yml file.
 biblio-style: apalike
+link-citations: yes
 # csl: chicago-fullnote-bibliography.csl
 graphics: yes
 lang: et
 
 ---
-
-# miski
 
 ```{r setup, echo=FALSE, message=FALSE}
 # example R options set globally
@@ -53,10 +53,25 @@ library(librarian)
 
 include_svg = function(path) {
 
-  if (knitr::is_latex_output()) {
+  if (knitr::is_latex_output() && ("pdf" != xfun::file_ext(path))) {
     output = xfun::with_ext(path, 'pdf')
     # you can compare the timestamp of pdf against svg to avoid conversion if necessary
-    system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+    
+    if ("svg" == xfun::file_ext(path)) {
+      system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+
+      # librarian::shelf(
+      #   "magick"
+      # )
+      # 
+      # img <- image_read(path)
+      # image_write(img, path = output, format = "pdf")
+      # system2("dwebp", c(shQuote(c(path)), "-o", shQuote(c(output, path))))
+    # system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+    } else {
+      system(paste('gm convert ', path, ' ', output), intern = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
+    }
+    
   } else {
     output = path
   }

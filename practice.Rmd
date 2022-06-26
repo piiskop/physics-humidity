@@ -1,2 +1,35 @@
 # Praktika
 
+## Augusti psühromeetriga õhuniiskuse määramine
+
+Augusti ehk märk-kuiv-psühromeeter koosneb kahest termomeetrist, millest üks on vett imava materjaliga ühendatud veeanumaga (joonis \@ref(fig:wet-dry-psychrometer)). Selle veeanumasse lisasime ümbritseva keskkonna temperatuuril destilleeritud vett ja ootasime, kuni veeanumaga vett imava materjali kaudu ühendatud termomeetri näit langes. Et see kiiremini langeks, lehvitasime papitükiga selle alumise otsa peale, mille ümber oli vett imav materjal, tuult. Kui näidu langemine lõppes, märkisime mõlema termomeetri näidu tabelisse \@ref(tab:data-analysis).
+
+(ref:psychrometer) @psychrometer
+
+```{r label = "wet-dry-psychrometer", fig.cap = "Märg-kuiv-psühromeeter ((ref:psychrometer)).", fig.margin = TRUE, dpi=1200}
+include_svg("wet-dry-psychrometer.svg")
+```
+
+## Aspiratsioonpsühromeetriga õhuniiskuse määramine
+
+Aspiratsioonpsühromeeter on kujutatud pildil \@ref(fig:aspiration-psychrometer). Aspiratsioonpsühromeeter, nagu nimetuseski, n-ö hingab [@aspirationspsychrometer]. 
+
+(ref:aspiration) @aspiration
+
+```{r label = "aspiration-psychrometer", fig.cap = "Aspiratsioonpsühromeeter ((ref:aspiration)).", fig.margin = TRUE}
+include_svg("Aspirations-Psychrometer-Fotomontage-65434-LRV1_3000px_2048x2048.svg")
+```
+
+Selles on kaks termomeetrit, millest üks on ühendatud niiskust imava jupiga. Kumb termomeeter ühendada, on vabalt valida. Üks jäetakse kuivtermomeetriks ja teine võetakse märgtermomeetriks. Materjal, mis imab vett, nt riidetükk keritakse ümber ühe termomeetri alumise otsa nagu näidatud pildil \@ref(fig:aspiration-psychrometer-installing-batist).
+
+(ref:aspiration-psychrometer-installing-batist) @aspiration_psychrometer_ru
+
+```{r label = "aspiration-psychrometer-installing-batist", fig.cap = "Aspiratsioonpsühromeetrisse batisti paigaldamine ((ref:aspiration-psychrometer-installing-batist)).", fig.margin = TRUE}
+include_svg("aspiration-psychrometer-installing-batist.png")
+```
+
+Termomeetri ülaosas on ventilaator, mis tirib õhku läbi mõlema termomeetri toru, mis soodustab aurustumist, mida on vaja niiske otsaga termomeetri jaoks. Kui mõlemast läbi ei tõmbaks, siis oleksid tingimused kummagi termomeetri jaoks erinevad ja me ei saaks näite võrrelda. meie ei kasutanud pildil \@ref(fig:aspiration-psychrometer) olevat 2600 eurot maksvat seadet, vaid meil oli kasutuses selline psühromeeter, mis töötab elektri jõul, nii et pole vaja ise lehvitada, puhuda ega keerutada, samuti mitte vedru üles keerata.
+
+Paigaldasime Assmanni aspiratsioonpsühromeetri ühe termomeetri alumise otsa ümber vett imava materjali, mille olime eelnevalt ümbritseva keskkonna temperatuuril oleva destilleeritud veega märjaks teinud, ja lülitasime seadme sisse. Ootasime, kuni niiske otsaga termomeetri näit vähenes. Teoreetiliselt vähenes ka kuivtermomeetri näit, sest õhku tõmmati ka selle otsa juurest läbi. Kui niiske otsaga termomeetri näit enam ei vähenenud, tegime kindlaks kummagi termomeetri näidu ja kandsime tabelisse \@ref(tab:data-analysis).
+
+## Õhu niiskuskarakteristikue määramine *Pasco* limasensoriga

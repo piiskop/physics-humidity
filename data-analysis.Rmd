@@ -1,6 +1,30 @@
 # Andmeanalüüs
 
-```{r}
+Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram).
 
+```{r label = "data-analysis"}
+t <- c(24)
+t1 <- c(16)
+librarian::shelf("psychrolib")
+SetUnitSystem("SI")
+psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
+print(psychometrics)
+GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
+GetDryAirVolume(t, p_at)
+GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
+GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
+GetSatVapPres(t)
+GetStandardAtmPressure(10)
+GetStationPressure(p_at, 10, t)
+GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
+GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
+# > 1/69.006*1000-.64*(24-16.5)
+# [1] 9.691493
+# > 9.691493/(1/45.863*1000)
+# [1] 0.4444809
+# > .5/755*1013.25
+# [1] 0.6710265
+librarian::shelf("MeTo")
+psyc_cons(elev = 2, P = 101.3)
 ```
 

@@ -1,1 +1,69 @@
 # Reeglid
+
+## Jõud
+
+```{=tex}
+\begin{align}
+F := m \cdot a,
+(\#eq:force)
+\end{align}
+```
+
+kus *m* on mass ja *a* on kiirendus [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+M \cdot \frac{L}{T^2} = \frac{L \cdot M}{T^2},
+(\#eq:dimensional-analysis-for-force)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\meter\kilogram\per\second\squared}$ või lühemalt $\unit{\newton}$.
+
+## Rõhk
+
+```{=tex}
+\begin{align}
+p := \frac{F}{A} = \frac{m \cdot a}{A},
+(\#eq:pressure)
+\end{align}
+```
+
+kus *A* on pindala [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{L \cdot M}{T^2 \cdot L^2} = \frac{M}{T^2 \cdot L},
+(\#eq:dimensional-analysis-for-pressure)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\kilogram\per\second\squared\per\meter}$ või lühemalt $\unit{\pascal}$.
+
+
+```{r label = "pressure"}
+p <- 100e3
+p_at <- 101.325e3
+```
+
+standardseisund
+: määratletud olek (määratud temperatuur, rõhk, kontsentratsioon jne) termodünaamiliste funktsioonide tabeleerimiseks ja termodünaamiliste arvutuste tegemiseks [@haynes_2014_crc, p. 2-65]
+
+Standardseisundi rõhk on `r p` $\unit{\pascal}$ [@haynes_2014_crc, p. 1-7]. Standardne atmosfäär on `r p_at` $\unit{\pascal}$.
+
+## Niiskus
+
+niiskus
+: õhus oleva vee massi suhe kuiva õhu massi [@a2018_determination]
+
+## Suhteline niiskus
+
+suhteline niiskus
+: õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
+temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
+
+
+
+Kuivkolvi temperatuur: see on puhkeolekus mõõdetud niiskuse temperatuur, mida õhu niiskusesisaldus ega kiirgus ei mõjuta.[@a2018_determination]
+
+Märgkolbi temperatuur: see on dünaamiline tasakaalutemperatuur, mille veepind saavutab adiabaatilistes tingimustes õhuga kokkupuutel[@a2018_determination]
