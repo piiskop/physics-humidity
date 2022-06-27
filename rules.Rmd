@@ -4,7 +4,7 @@
 
 ```{=tex}
 \begin{align}
-F := m \cdot a,
+\vec{F} := m \cdot \vec{a},
 (\#eq:force)
 \end{align}
 ```
@@ -13,12 +13,45 @@ kus *m* on mass ja *a* on kiirendus [@haynes_2014_crc, p. 2-2]. Dimensionaalanal
 
 ```{=tex}
 \begin{align}
-M \cdot \frac{L}{T^2} = \frac{L \cdot M}{T^2},
+\mathrm{M \cdot \frac{L}{T^2} = \frac{L \cdot M}{T^2}},
 (\#eq:dimensional-analysis-for-force)
 \end{align}
 ```
 
 mistõttu ühik on $\unit{\meter\kilogram\per\second\squared}$ või lühemalt $\unit{\newton}$.
+
+## Temperatuur
+
+
+```{=tex}
+\begin{align}
+T := t + 237.15,
+(\#eq:absolute-temperature)
+\end{align}
+```
+
+mille ühik on $\unit{\kelvin}$ [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 8].
+
+## Energia, töö, soojushulk
+
+
+```{=tex}
+\begin{align}
+E := \int{\vec{F}} \cdot \mathrm{d}(s) = \int{m \cdot \vec{a}} \cdot \mathrm{d}(s),
+(\#eq:energy)
+\end{align}
+```
+
+milles $\mathrm{d}(s)$ on lõputult väike nihe [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L \cdot M}{T^2} \cdot L = \frac{L^2 \cdot M}{T^2}},
+(\#eq:dimensional-analysis-for-energy)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\frac{m^2 \cdot kg}{s^2}}$ või lühemalt $\unit{m \cdot N}$ või veelgi lühemalt $\unit{J}$.
 
 ## Rõhk
 
@@ -33,7 +66,7 @@ kus *A* on pindala [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
 
 ```{=tex}
 \begin{align}
-\frac{L \cdot M}{T^2 \cdot L^2} = \frac{M}{T^2 \cdot L},
+\mathrm{\frac{L \cdot M}{T^2 \cdot L^2} = \frac{M}{T^2 \cdot L}},
 (\#eq:dimensional-analysis-for-pressure)
 \end{align}
 ```
@@ -50,6 +83,163 @@ standardseisund
 : määratletud olek (määratud temperatuur, rõhk, kontsentratsioon jne) termodünaamiliste funktsioonide tabeleerimiseks ja termodünaamiliste arvutuste tegemiseks [@haynes_2014_crc, p. 2-65]
 
 Standardseisundi rõhk on `r p` $\unit{\pascal}$ [@haynes_2014_crc, p. 1-7]. Standardne atmosfäär on `r p_at` $\unit{\pascal}$.
+
+Ideaalse gaasi rõhk:
+```{r label = "r"}
+R <- 8314.472e-3
+```
+
+```{=tex}
+\begin{align}
+p := \frac{n \cdot R \cdot T}{V},
+(\#eq:pressure-of-ideal-gas)
+\end{align}
+```
+
+milles *n* on ainehulk, *R* on universaalne gaasikonstant $`r R` \times \unit{\joule\per\mole\per\kelvin}$ ja *V* on ruumala [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]. Dimensionaalanalüüs:
+
+
+```{=tex}
+\begin{align}
+\frac{\mathrm{N} \cdot \frac{\mathrm{L^2 \cdot M}}{\mathrm{T^2 \cdot N} \cdot \Theta} \cdot \Theta}{\mathrm{L^3}} = \mathrm{\frac{M}{L \cdot T^2}},
+(\#eq:dimensional-analysis-for-pressure-of-ideal-gas)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\kilogram\per\meter\per\second\squared}$ ehk lühemalt $\unit{\pascal}$.
+
+Küllastusrõhk vedela vee kohal temperatuurivahemikus 0 kuni 200°C on antud valemiga
+
+```{=tex}
+
+\begin{align}
+& p_{ws} && := e^{\sum_{i := 8}^{n}{C_i \times T^{i - 9}} + 6.5459673 \times \mathrm{ln}(T)}\\
+&&&= e^{\sum_{i := 8}^n{C_i \times (t + 273.15)^{i - 9}} + 6.5459673 \times \mathrm{ln}(t + 273.15)}\text{, kus}\\
+& C_8 && := -5.8002206 \times 10^3,\\
+& C_9 && := 1.3914993,\\
+& C_{10} && := -4.8640239 \times 10^{-2},\\
+& C_{11} && := 4.1764768 \times 10^{-5},\\
+& C_{12} && := -1.4452093 \times 10^{-8}
+(\#eq:saturation-pressure-over-liquid-h2o)
+\end{align}
+
+```
+
+milles *T* on absoluutne temperatuur [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14].
+
+## Molaarmass
+
+
+```{=tex}
+\begin{align}
+M_\mathrm{B} := \frac{m}{n_\mathrm{B}},
+(\#eq:molar-mass)
+\end{align}
+```
+
+kus $n_\mathrm{B}$ on (aine)hulk [@haynes_2014_crc, p. 2-8]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{M}{N}},
+(\#eq:dimensional-analysis-for-molar-mass)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\kilogram\per\mole}$.
+```{r label = "molar-masses"}
+M_H2O <- 18.015268e-3
+```
+
+Vee molaarmass on $`r M_H2O` \times \unit{\kilogram\per\mole}$ [@haynes_2014_crc, p. 6-9].
+
+## Massikontsentratsioon (massi tihedus)
+
+
+```{=tex}
+\begin{align}
+γ_\mathrm{B} := \frac{m_\mathrm{B}}{V}
+(\#eq:mass-concentration)
+\end{align}
+```
+
+[@haynes_2014_crc, p. 2-8].
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{M}{L^3}},
+(\#eq:dimensional-analysis-for-mass-concentration)
+\end{align}
+```
+
+millest johtuvalt on ühik $\unit{\kilogram\per\cubic\metre}$.
+
+Ideaalse gaasi tiheduse valemi loomiseks asendan ideaalse gaasi rõhu valemisse \@ref(eq:pressure-of-ideal-gas) leheküljel $\pageref{eq:pressure-of-ideal-gas}$ molaarmassi valemist \@ref(eq:molar-mass) leheküjel $\pageref{eq:molar-mass}$ ainehulga:
+
+
+```{=tex}
+\begin{align}
+p :&= \frac{\frac{m}{M_\mathrm{B}} \cdot R \cdot T}{V}\\
+p :&= \frac{m \cdot R \cdot T}{M_\mathrm{B} \cdot V}\\
+\frac{m}{V} &= \frac{p \cdot M_\mathrm{B}}{R \cdot T} =: \gamma_\mathrm{B}.
+(\#eq:mass-concentration-of-ideal-gas)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{M}{L^3}} = \frac{\mathrm{\frac{M}{T^2 \cdot L} \cdot \frac{M}{N}}}{\frac{\mathrm{\frac{L^2 \cdot M}{T^2}}}{\mathrm{N} \cdot \Theta} \cdot \Theta} = \frac{\mathrm{M^2 \cdot N} \cdot \Theta}{\mathrm{T^2 \cdot L \cdot N \cdot \frac{L^2 \cdot M}{T^2}} \cdot \Theta},
+(\#eq:dimensional-analysis-for-mass-concentration-of-ideal-gas)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\kilogram\per\cubic\meter}$.
+
+Küllastava veeauru tiheduse arvutamiseks pistan rõhu küllastusrõhu valemist \@ref(eq:saturation-pressure-over-liquid-h2o) ideaalse gaasi tiheduse valemisse:
+
+```{=tex}
+\begin{align}
+\gamma_\mathrm{B} &= \frac{e^{\sum_{i := 8}^n{C_i \times (t + 273.15)^{i - 9}} + 6.5459673 \times \mathrm{ln}(t + 273.15)} \cdot M_\mathrm{B}}{R \cdot T}.
+(\#eq:density-of-saturated-h2o)
+\end{align}
+```
+```{r label = "mass-concentration-t"}
+
+librarian::shelf("psychrolib")
+
+T_min <- GetTKelvinFromTCelsius(0)
+T_max <- GetTKelvinFromTCelsius(200)
+```
+
+Lasen koostada tabeli \@ref(tab:density-of-saturated-h2o) küllastava veeauru tiheduse kohta vastavalt temperatuurile vahemikus $`r T_min` \times \unit{\kelvin}$ kuni $`r T_max` \times \unit{\kelvin}$:
+```{r label = "density-of-saturated-h2o"}
+t <- seq(0, 200, 1)
+T <- GetTKelvinFromTCelsius(t)
+p_H2O <- exp(1)^(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T))
+gamma_H2O <- p_H2O * M_H2O / (R * T)
+density_of_saturated_H2O <- data.frame(
+  t,
+  T,
+  p_H2O,
+  gamma_H2O
+)
+
+colnames(density_of_saturated_H2O) <- c(
+  "$\\frac{\\text{Temperatuur}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{\\text{Absoluutne temperatuur}}{\\unit{\\kelvin}}$",
+  "$\\frac{\\text{Rõhk}}{\\unit{\\pascal}}$",
+  "$\\frac{\\text{Küllastava veeauru tihedus}}{\\unit{\\kilogram\\per\\cubic\\meter}}$"
+)
+
+print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihedused vahemikus", T_min, "$\\times \\unit{\\kelvin}$ kuni",  T_max, "$\\times \\unit{\\kelvin}$"), digits = 5)
+
+
+```
 
 ## Niiskus
 

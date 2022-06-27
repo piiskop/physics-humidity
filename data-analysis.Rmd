@@ -4,7 +4,7 @@ Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrre
 
 ```{r label = "data-analysis"}
 t <- c(24)
-t1 <- c(16)
+t1 <- c(16.5)
 librarian::shelf("psychrolib")
 SetUnitSystem("SI")
 psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
@@ -26,5 +26,12 @@ GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
 # [1] 0.6710265
 librarian::shelf("MeTo")
 psyc_cons(elev = 2, P = 101.3)
+# > -5.8002206e3/(24+273.15) + 1.3914993e0 - 4.8640239e-2*(24+273.15) + 4.1764768e-5*(24+273.15)^2 - 1.4452093e-8*(24+273.15)^3 + 6.5459673e0*log((24+273.15))
+# [1] 8.001398
+# > exp(1)^8.001398
+# [1] 2985.128
+# > 2985.128*.018/8.314472/(24+273.15)
+# [1] 0.02174829
+
 ```
 

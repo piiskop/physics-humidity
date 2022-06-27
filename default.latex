@@ -437,6 +437,8 @@ $if(logo)$
 $endif$
 $endif$
 
+% \usepackage{fvextra} % needed for code wrapping
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

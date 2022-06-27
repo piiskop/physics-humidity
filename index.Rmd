@@ -93,8 +93,14 @@ print_table <- function(data_frame, caption, digits = 2) {
   } else {
     librarian::shelf("kableExtra")
 
-    table <- (kable(data_frame, booktabs = TRUE, escape = FALSE, caption = caption, digits = digits) %>%
-      kable_styling(bootstrap_options = c("striped", "bordered", "condensed", "responsive", "hover"), latex_options = c("scale_down", "striped"), full_width = TRUE))
+    table <- (kable(data_frame, booktabs = TRUE, escape = FALSE, caption = caption, digits = digits, longtable = TRUE) %>%
+      kable_styling(
+        bootstrap_options = c("striped", "bordered", "condensed", "responsive", "hover"),
+        latex_options = c("scale_down", "striped", "repeat_header"),
+        repeat_header_text = paste(caption, "$\\textit{(Jätkub...)}$"),
+        repeat_header_method = "replace",
+        repeat_header_continued = "Tabel järgneb järgmisel leheküljel..."
+      ))
   } 
 
   return(table)

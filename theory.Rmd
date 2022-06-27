@@ -18,4 +18,5 @@ include_svg("relative-humidity.webp")
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 
+On loodud ka vahetabeleid, nt küllastava veeauru tiheduse kohta sõltuvalt temperatuurist. Et mõista, kuidas need arvud sellisesse tabelisse on tekitatud, tuleb tuletada selle nimetatud tiheduse valem kasutades ideaalse gaasi rõhu valemit \@ref(eq:pressure-of-ideal-gas), millesse asendada molaarmassi valemist \@ref(eq:molar-mass) ainehulk:
 
