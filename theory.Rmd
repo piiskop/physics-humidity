@@ -14,7 +14,7 @@ include_svg("relative-humidity.webp")
 
 (ref:psychrometric-chart) @psychrometric-chart
 
-```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '\\textheight'}
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 

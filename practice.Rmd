@@ -6,7 +6,7 @@ Augusti ehk märk-kuiv-psühromeeter koosneb kahest termomeetrist, millest üks 
 
 (ref:psychrometer) @psychrometer
 
-```{r label = "wet-dry-psychrometer", fig.cap = "Märg-kuiv-psühromeeter ((ref:psychrometer)).", fig.align = "center", out.height = "90%"}
+```{r label = "wet-dry-psychrometer", fig.cap = "Märg-kuiv-psühromeeter ((ref:psychrometer)).", fig.align = "center", out.height = "96%"}
 include_svg("wet-dry-psychrometer.svg")
 ```
 
@@ -16,7 +16,7 @@ Aspiratsioonpsühromeeter on kujutatud pildil \@ref(fig:aspiration-psychrometer)
 
 (ref:aspiration) @aspiration
 
-```{r label = "aspiration-psychrometer", fig.cap = "Aspiratsioonpsühromeeter ((ref:aspiration)).", fig.align = "center", fig.fullheight=TRUE}
+```{r label = "aspiration-psychrometer", fig.cap = "Aspiratsioonpsühromeeter ((ref:aspiration)).", fig.align = "center", fig.fullheight=TRUE, out.height="96%"}
 include_svg("Aspirations-Psychrometer-Fotomontage-65434-LRV1_3000px_2048x2048.svg")
 ```
 

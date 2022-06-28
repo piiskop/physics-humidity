@@ -12,6 +12,7 @@ bookdown::pdf_book:
   template: default.latex
   graphics: yes
   extra_dependencies:
+    mhchem : version=4
     siunitx: null
   pandoc_args: [
     --highlight-style=tango

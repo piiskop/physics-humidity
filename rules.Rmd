@@ -218,10 +218,21 @@ T_max <- GetTKelvinFromTCelsius(200)
 
 Lasen koostada tabeli \@ref(tab:density-of-saturated-h2o) küllastava veeauru tiheduse kohta vastavalt temperatuurile vahemikus $`r T_min` \times \unit{\kelvin}$ kuni $`r T_max` \times \unit{\kelvin}$:
 ```{r label = "density-of-saturated-h2o"}
-t <- seq(0, 200, 1)
+t <- c(seq(0, 5, 1), seq(6, 27.9, .1), seq(28, 200, 4))
 T <- GetTKelvinFromTCelsius(t)
-p_H2O <- exp(1)^(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T))
-gamma_H2O <- p_H2O * M_H2O / (R * T)
+
+calculate_p_H2O <- function(T) {
+  return(exp(1)^(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
+}
+
+p_H2O <- calculate_p_H2O(T)
+
+calculate_gamma_H2O <- function(p_H2O, T) {
+  return(p_H2O * M_H2O / (R * T))
+}
+
+gamma_H2O <- calculate_gamma_H2O(calculate_p_H2O(T), T)
+
 density_of_saturated_H2O <- data.frame(
   t,
   T,
@@ -236,8 +247,37 @@ colnames(density_of_saturated_H2O) <- c(
   "$\\frac{\\text{Küllastava veeauru tihedus}}{\\unit{\\kilogram\\per\\cubic\\meter}}$"
 )
 
-print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihedused vahemikus", T_min, "$\\times \\unit{\\kelvin}$ kuni",  T_max, "$\\times \\unit{\\kelvin}$"), digits = 5)
+print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihedused vahemikus", T_min, "$\\times \\unit{\\kelvin}$ kuni",  T_max, "$\\times \\unit{\\kelvin}$."), digits = 5)
 
+
+```
+
+Näeme jooniselt \@ref(fig:diagram-for-density-of-saturated-h2o), kuidas temperatuuri suurenedes eksponentsiaalselt suureneb küllastava veeauru tihedus. See tähendab, et mida soojem on õhk, seda rohkem veeauru õhku mahub. Inimesele sobivates tingimustes õhutemperatuuri puhul on küllastava veeauru tiheduse erinevus eri temperatuuridel peaaegu mittemärgatav ja nullilähedane.
+
+```{r label = "diagram-for-density-of-saturated-h2o", fig.cap="Küllastava veeauru tiheduse sõltuvus temperatuurist."}
+librarian::shelf(
+  ggplot2,
+  latex2exp
+)
+
+ggplot(data = density_of_saturated_H2O, aes(x = T, y = gamma_H2O)) +
+  geom_point() +
+  labs(x = TeX("$\\frac{T}{K}$"), y = TeX("$\\frac{\\gamma(H_2O)}{\\frac{kg}{m^3}}$"))
+
+```
+
+Näeme jooniselt \@ref(fig:diagram-for-pressure-of-saturated-h2o), kuidas temperatuuri suurenedes eksponentsiaalselt suureneb küllastava veeauru rõhk.
+
+
+```{r label = "diagram-for-pressure-of-saturated-h2o", fig.cap="Küllastava veeauru rõhu sõltuvus temperatuurist."}
+librarian::shelf(
+  ggplot2,
+  latex2exp
+)
+
+ggplot(data = density_of_saturated_H2O, aes(x = T, y = p_H2O)) +
+  geom_point() +
+  labs(x = TeX("$\\frac{T}{K}$"), y = TeX("$\\frac{p(H_2O)}{Pa}$"))
 
 ```
 
@@ -246,14 +286,46 @@ print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihed
 niiskus
 : õhus oleva vee massi suhe kuiva õhu massi [@a2018_determination]
 
-## Suhteline niiskus
+kuivkolvi temperatuur
+:  puhkeolekus mõõdetud niiskuse temperatuur, mida õhu niiskusesisaldus ega kiirgus ei mõjuta[@a2018_determination]
+
+märgkolbi temperatuur
+: dünaamiline tasakaalutemperatuur, mille veepind saavutab adiabaatilistes tingimustes õhuga kokkupuutel[@a2018_determination]
+
+Absoluutne niiskus ehk rõhk kastepunktis:
+```{r label = "rules-b"}
+B <- .5 / 755
+```
+
+```{=tex}
+\begin{align}
+p_\text{dp} := p_\text{w} - (T_\text{d} - T_\text{w}) \cdot p \cdot B,
+(\#eq:absolute-humidity)
+\end{align}
+```
+
+milles *dp* tähendab kastepunkti, *w* märga ja *d* kuiva ning $B := `r B` \times \unit{\\per\\kelvin}$ [@Whipple_1933]. See absoluutse niiskuse arvutamise valem kehtib vedela vee kohta.
 
 suhteline niiskus
 : õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
 temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
 
+Suhtelise niiskuse valem:
 
+```{=tex}
+\begin{align}
+RH := \frac{e}{\gamma}
+(\#eq:relative-humidity)
+\end{align}
+```
 
-Kuivkolvi temperatuur: see on puhkeolekus mõõdetud niiskuse temperatuur, mida õhu niiskusesisaldus ega kiirgus ei mõjuta.[@a2018_determination]
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15].
 
-Märgkolbi temperatuur: see on dünaamiline tasakaalutemperatuur, mille veepind saavutab adiabaatilistes tingimustes õhuga kokkupuutel[@a2018_determination]
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{\frac{M}{L^3}}{\frac{M}{L^3}}} = 1.
+(\#eq:dimensional-analysis-for-relative-humidity)
+\end{align}
+```

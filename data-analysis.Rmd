@@ -3,21 +3,59 @@
 Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram).
 
 ```{r label = "data-analysis"}
-t <- c(24)
-t1 <- c(16.5)
+method <- c("Augusti psühhomeeter")
+t_d <- c(24)
+t_w <- c(16.5)
+T_w <- GetTKelvinFromTCelsius(t_w)
+p_w_H2O <- calculate_p_H2O(T_w)
+gamma_w <- calculate_gamma_H2O(p_w_H2O, T_w)
+p_dp <- p_w_H2O - (t_d - t_w) * p_at / 1510
+T_d <- GetTKelvinFromTCelsius(t_d)
+gamma_d <- calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
+p_d_H2O <- calculate_p_H2O(T_d)
+RH <- p_dp / p_d_H2O
+
+psychrometry <- data.frame(
+  method,
+  t_d,
+  T_d,
+  gamma_d,
+  t_w,
+  T_w,
+  gamma_w,
+  p_dp,
+  RH
+)
+
+colnames(psychrometry) = c(
+  "Meetod või sensor",
+  "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
+  "$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
+  "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
+  "$\\frac{\\gamma_\\text{w}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
+  "$\\frac{p_\\text{dp}(\\ce{H_2O})}{\\unit{\\Pa}}$",
+  "RH"
+)
+
+
+print_table(psychrometry, caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed, milles $w$ tähendab märga ja $d$ kuiva keskkonda ning $dp$ kastepunkti.", digits = 5)
+
+
 librarian::shelf("psychrolib")
 SetUnitSystem("SI")
-psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
-print(psychometrics)
-GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
+# psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
+# print(psychometrics)
+# GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
 GetDryAirVolume(t, p_at)
-GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
-GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
+# GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
+# GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
 GetSatVapPres(t)
 GetStandardAtmPressure(10)
 GetStationPressure(p_at, 10, t)
-GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
-GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
+# GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
+# GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
 # > 1/69.006*1000-.64*(24-16.5)
 # [1] 9.691493
 # > 9.691493/(1/45.863*1000)
