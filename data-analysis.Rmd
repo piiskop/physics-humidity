@@ -3,17 +3,32 @@
 Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram).
 
 ```{r label = "data-analysis"}
-method <- c("Augusti psühhomeeter")
-t_d <- c(24)
-t_w <- c(16.5)
+method <- c(
+  "Augusti psühhomeeter",
+  "Assmanni psühhomeeter",
+  "Pasco
+ilmajaama
+andmete järgi
+niiskuse
+karakteristikud"
+)
+
+t_d <- c(24, 24.6, 26.3)
+SetUnitSystem("SI")
+T_d <- GetTKelvinFromTCelsius(t_d)
+RH_Pasco <- 30.8e-2
+t_w_Pasco <- GetTWetBulbFromRelHum(t_d[3], RH_Pasco, p_at)
+t_w <- c(16.5, 15.2, t_w_Pasco)
 T_w <- GetTKelvinFromTCelsius(t_w)
 p_w_H2O <- calculate_p_H2O(T_w)
 gamma_w <- calculate_gamma_H2O(p_w_H2O, T_w)
-p_dp <- p_w_H2O - (t_d - t_w) * p_at / 1510
-T_d <- GetTKelvinFromTCelsius(t_d)
+p_dp <- calculate_p_dp(p_w_H2O, t_d, t_w)
 gamma_d <- calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
+a <- gamma_w * 1e3 - .64 * (t_d - t_w)
 p_d_H2O <- calculate_p_H2O(T_d)
-RH <- p_dp / p_d_H2O
+RH <- calculate_RH(p_dp, p_d_H2O)
+RH_according_to_instructions <- a / (gamma_d * 1e3) * 100
+RH_psychrolib <- GetRelHumFromTWetBulb(t_d, t_w, p_at)
 
 psychrometry <- data.frame(
   method,
@@ -22,9 +37,12 @@ psychrometry <- data.frame(
   gamma_d,
   t_w,
   T_w,
+  a,
   gamma_w,
   p_dp,
-  RH
+  RH,
+  RH_according_to_instructions,
+  RH_psychrolib
 )
 
 colnames(psychrometry) = c(
@@ -34,17 +52,26 @@ colnames(psychrometry) = c(
   "$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
   "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
   "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
+  "$\\frac{a}{\\unit{\\gram\\per\\cubic\\meter} - \\unit{\\degreeCelsius}}$",
   "$\\frac{\\gamma_\\text{w}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
   "$\\frac{p_\\text{dp}(\\ce{H_2O})}{\\unit{\\Pa}}$",
-  "RH"
+  "$RH$",
+  "Vastavalt juhendile $\\frac{RH}{\\unit{\\percent}}$",
+  "Vastavalt \"psychrolib\"ile $RH$"
 )
 
 
-print_table(psychrometry, caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed, milles $w$ tähendab märga ja $d$ kuiva keskkonda ning $dp$ kastepunkti.", digits = 5)
-
+print_table(
+  psychrometry,
+  caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed, milles $w$ tähendab märga ja $d$ kuiva keskkonda ning $dp$ kastepunkti.",
+  digits = 5
+) %>%
+  column_spec(1, width = "6em") %>%
+  column_spec(11, width = "5em") %>%
+  column_spec(12, width = "5em") %>%
+  landscape()
 
 librarian::shelf("psychrolib")
-SetUnitSystem("SI")
 # psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
 # print(psychometrics)
 # GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
@@ -70,6 +97,10 @@ psyc_cons(elev = 2, P = 101.3)
 # [1] 2985.128
 # > 2985.128*.018/8.314472/(24+273.15)
 # [1] 0.02174829
+
+```
+
+```{r label = "dp"}
 
 ```
 

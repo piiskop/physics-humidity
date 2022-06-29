@@ -218,7 +218,7 @@ T_max <- GetTKelvinFromTCelsius(200)
 
 Lasen koostada tabeli \@ref(tab:density-of-saturated-h2o) küllastava veeauru tiheduse kohta vastavalt temperatuurile vahemikus $`r T_min` \times \unit{\kelvin}$ kuni $`r T_max` \times \unit{\kelvin}$:
 ```{r label = "density-of-saturated-h2o"}
-t <- c(seq(0, 5, 1), seq(6, 27.9, .1), seq(28, 200, 4))
+t <- c(seq(0, 14, 2), seq(15, 27.9, .1), seq(28, 200, 4))
 T <- GetTKelvinFromTCelsius(t)
 
 calculate_p_H2O <- function(T) {
@@ -314,7 +314,7 @@ Suhtelise niiskuse valem:
 
 ```{=tex}
 \begin{align}
-RH := \frac{e}{\gamma}
+RH := \frac{p_\text{dp}}{p_\text{d}}
 (\#eq:relative-humidity)
 \end{align}
 ```
@@ -329,3 +329,60 @@ Dimensionaalanalüüs:
 (\#eq:dimensional-analysis-for-relative-humidity)
 \end{align}
 ```
+
+Tabelis \@ref(tab:rh) on esitatud väljaarvutatud suhteline niiskus valitud temperatuuride korral.
+
+```{r label = "rh"}
+calculate_RH <- function(p_dp, p_d_H2O) {
+  return(p_dp / p_d_H2O)
+}
+
+calculate_p_dp <- function(p_w_H2O, T_d, T_w) {
+  return(p_w_H2O - (T_d - T_w) * p_at / 1510)
+}
+
+t_d <- c(seq(10, 24, 1), seq(24.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
+T_d <- GetTKelvinFromTCelsius(t_d)
+delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
+
+calculate_RH_from_delta_T <- function(T_d, delta_T) {
+  T_w <- T_d - delta_T
+  p_w_H2O <- calculate_p_H2O(T_w)
+  p_dp <- calculate_p_dp(p_w_H2O, T_d, T_w)
+  p_d_H2O <- calculate_p_H2O(T_d)
+  RH <- p_dp / p_d_H2O
+  RH_non_negative <- ifelse(RH < 0, "", RH)
+  return(RH_non_negative)
+}
+
+RH_T <- data.frame(T_d)
+librarian::shelf("dplyr")
+
+for (index in delta_T) {
+  RH <- calculate_RH_from_delta_T(T_d = T_d, delta_T = index)
+  RH_numeric <- as.numeric(RH)
+  RH_T <- cbind(RH_T, ifelse(is.na(RH_numeric), "", round(RH_numeric * 100, digits = 1)))
+}
+
+colnames(RH_T) <- c(
+  "$\\frac{T}{\\unit{\\kelvin}}$",
+  delta_T
+)
+
+header_text <- c("Kuiva termomeetri näit", paste("Kuiva ja märja termomeetri näitude vahe $\\\\frac{\\\\Delta(T)}{\\\\unit{\\\\kelvin}}$"))
+header_span <- c(1, 19)
+header <- data.frame(header_text, header_span)
+
+print_table(
+  RH_T,
+  caption = "Psühhomeetri tabel: sisuosas on esitatud suhteline õhuniiskus protsentides.",
+  digits = 5,
+  additional_header = header
+) %>%
+  column_spec(1, width = "6em") %>%
+  landscape()
+
+# add_header_above(RH_T, "jou" = 1)
+
+```
+

@@ -18,5 +18,42 @@ include_svg("relative-humidity.webp")
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 
-On loodud ka vahetabeleid, nt küllastava veeauru tiheduse kohta sõltuvalt temperatuurist. Et mõista, kuidas need arvud sellisesse tabelisse on tekitatud, tuleb tuletada selle nimetatud tiheduse valem kasutades ideaalse gaasi rõhu valemit \@ref(eq:pressure-of-ideal-gas), millesse asendada molaarmassi valemist \@ref(eq:molar-mass) ainehulk:
+Absoluutse niiskuse arvutamiseks on juhendis valem
 
+```{=tex}
+\begin{align}
+a := \gamma_\text{w} \cdot 10^3 - 0.64 \cdot (t_\text{d} - t_\text{w}).
+(\#eq:a)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{M}{L^3} - \Theta,
+(\#eq:dimensional-analysis-for-a)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\gram\per\cubic\meter} - \unit{\kelvin}$.
+
+Valemit \@ref(eq:a) kasutatakse juhendis suhtelise niiskuse arvutamiseks:
+
+```{=tex}
+\begin{align}
+RH := \frac{a}{\gamma_\text{d} \cdot 10^3}.
+(\#eq:rh-in-instructions)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\frac{M}{L^3} - \Theta}{\frac{M}{L^3}} = 1 - \frac{\Theta}{\frac{M}{L^3}} = \frac{\Theta}{\frac{M}{L^3}},
+(\#eq:dimensional-analysis-for-rh-in-instructions)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\kelvin\per\gram\per\cubic\meter}$.
