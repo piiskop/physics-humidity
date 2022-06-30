@@ -101,6 +101,15 @@ psyc_cons(elev = 2, P = 101.3)
 ```
 
 ```{r label = "dp"}
-
+t_dp_Pasco <- 6.8
+T_dp_Pasco <- GetTKelvinFromTCelsius(t_dp_Pasco)
+p_dp <- calculate_p_H2O(T_dp_Pasco)
+p_d <- calculate_p_H2O(GetTKelvinFromTCelsius(t_d[3]))
+RH <- calculate_RH(p_dp, p_d)
+t_dp_r <- 5.9
+T_dp_r <- GetTKelvinFromTCelsius(t_dp_r)
 ```
 
+Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_Pasco`}{\kelvin}$. Selle kaudu arvutatud õhuniiskus oli  `r RH`.
+
+Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.

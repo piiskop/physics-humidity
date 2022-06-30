@@ -222,7 +222,16 @@ t <- c(seq(0, 14, 2), seq(15, 27.9, .1), seq(28, 200, 4))
 T <- GetTKelvinFromTCelsius(t)
 
 calculate_p_H2O <- function(T) {
-  return(exp(1)^(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
+  
+  for (index in 1:length(T)) {
+  
+    if (T[index] < 273.15 | T[index] > 473.15) {
+      stop(paste("The absolute temperature must be between 273.15 and 473.15 K inclusive. The current absolute temperature at the position", index, "is", T[index], "K."))
+    }
+    
+  }
+  
+  return(exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
 }
 
 p_H2O <- calculate_p_H2O(T)
@@ -346,13 +355,30 @@ T_d <- GetTKelvinFromTCelsius(t_d)
 delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
 
 calculate_RH_from_delta_T <- function(T_d, delta_T) {
-  T_w <- T_d - delta_T
-  p_w_H2O <- calculate_p_H2O(T_w)
-  p_dp <- calculate_p_dp(p_w_H2O, T_d, T_w)
-  p_d_H2O <- calculate_p_H2O(T_d)
-  RH <- p_dp / p_d_H2O
-  RH_non_negative <- ifelse(RH < 0, "", RH)
-  return(RH_non_negative)
+  RH <- c()
+  
+  for (index in 1:length(T_d)) {
+    T_w <- T_d[index] - delta_T
+    
+    if (T_w < 273.15) {
+      RH <- c(RH, "")
+    } else {
+      p_w_H2O <- calculate_p_H2O(T_w)
+      p_dp <- calculate_p_dp(p_w_H2O, T_d[index], T_w)
+      p_d_H2O <- calculate_p_H2O(T_d[index])
+
+      if (p_dp < 0) {
+        RH <- c(RH, "")
+      } else {
+        
+        RH <- c(RH, p_dp / p_d_H2O)
+      }
+      
+    }
+    
+  }
+
+  return(RH)
 }
 
 RH_T <- data.frame(T_d)
@@ -381,8 +407,6 @@ print_table(
 ) %>%
   column_spec(1, width = "6em") %>%
   landscape()
-
-# add_header_above(RH_T, "jou" = 1)
 
 ```
 
