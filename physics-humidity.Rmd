@@ -1,3 +1,159 @@
+--- 
+title: "Õhuniiskuse karakteristikute määramine"
+subtitle: "Viies laboratoorne töö soojusõpetuses"
+author: "peacecop kalmer:"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: article
+papersize: a4
+fontsize: 12pt
+mainfont: Times New Roman
+classoption: onecolumn, twoside
+sep: ", "
+geometry:  left=3cm, right=2cm, top=2cm, bottom=3cm
+linestretch: 1.5
+lof: yes
+lot: yes
+bibliography: [book.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::bs4_book,
+  set in the _output.yml file.
+biblio-style: apalike
+link-citations: yes
+# csl: chicago-fullnote-bibliography.csl
+graphics: yes
+lang: et
+
+---
+
+```{r setup, echo=FALSE, message=FALSE}
+# example R options set globally
+options(bookdown.render.file_scope = FALSE)
+
+# example chunk options set globally
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  echo = TRUE,
+  out.width = "\\textwidth",
+  out.height = "\\textheight",
+  out.extra = "keepaspectratio=true",
+  fig.margin = TRUE,
+  attr.source = '.numberLines'
+)
+
+if (!require("librarian")) {
+  install.packages("librarian", dependencies = TRUE)
+}
+
+library(librarian)
+
+include_svg = function(path) {
+
+  if (knitr::is_latex_output() && ("pdf" != xfun::file_ext(path))) {
+    output = xfun::with_ext(path, 'pdf')
+    # you can compare the timestamp of pdf against svg to avoid conversion if necessary
+    
+    if ("svg" == xfun::file_ext(path)) {
+      system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+
+      # librarian::shelf(
+      #   "magick"
+      # )
+      # 
+      # img <- image_read(path)
+      # image_write(img, path = output, format = "pdf")
+      # system2("dwebp", c(shQuote(c(path)), "-o", shQuote(c(output, path))))
+    # system2('rsvg-convert', c('-f', 'pdf', '-a', '-o', shQuote(c(output, path))))
+    } else {
+      system(paste('gm convert ', path, ' ', output), intern = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
+    }
+    
+  } else {
+    output = path
+  }
+  
+  knitr::include_graphics(output)
+}
+
+if (!require("librarian")) {
+  install.packages("librarian", dependencies = TRUE)
+}
+
+library(librarian)
+
+print_table <- function(data_frame, caption, digits = 2, additional_header = "") {
+
+  if (!is.null(knitr::opts_knit$get('rmarkdown.pandoc.to')) && (knitr::opts_knit$get('rmarkdown.pandoc.to') == "docx")) {
+    librarian::shelf("flextable")
+    table <- (flextable(data_frame))
+  } else {
+    librarian::shelf("kableExtra")
+
+    table <- kable(data_frame, booktabs = TRUE, escape = FALSE, caption = caption, digits = digits, longtable = TRUE)
+    
+    if (is.data.frame(additional_header) || is.vector(additional_header)) {
+      table <- add_header_above(kable_input = table, header = additional_header, escape = FALSE)
+    }
+    
+    
+    table <- (kable_styling(
+      table,
+      bootstrap_options = c("striped", "bordered", "condensed", "responsive", "hover"),
+      latex_options = c("striped", "repeat_header"),
+      repeat_header_text = paste(caption, "$\\textit{(Jätkub...)}$"),
+      repeat_header_method = "replace",
+      repeat_header_continued = "Tabel järgneb järgmisel leheküljel..."
+    ))
+    
+  } 
+
+  return(table)
+}
+
+```
+
+```{=tex}
+\sisetup{inter-unit-product = \ensuremath { { } \times { } } }
+```
+
+<!--chapter:end:index.Rmd-->
+
+# Eesmärgid
+
+1. Õhuniiskuse peamiste karakteristikute ja vahenditega nende määramiseks tutvutud.
+
+2. Õhu relatiivne ja absoluutne niiskus ning kastepunkt erinevate meetoditega katseliselt määratud.
+
+<!--chapter:end:goals.Rmd-->
+
+# Vahendid
+
+1. anspiratsioonpsühhopeeter,
+
+2. statsionaarne pühhomeeter,
+
+3. läikiva välispinnag ametallist õõneskera statiivil,
+
+4. temperatuurisensor,
+
+5. jäätükid,
+
+6. puhas riidelapp,
+
+7. aknapuhastuse vahend,
+
+8. destilleeritud vesi,
+
+9. limasensor,
+
+10. mitmeotstarbeline arvuti.
+
+<!--chapter:end:tools.Rmd-->
+
 # Reeglid
 
 ## Jõud
@@ -523,3 +679,259 @@ dew point water on glass kim wilde
 W := \frac{m(\ce{H_2O})}{m(\text{air})} =
 \end{align}
 ``` 
+
+<!--chapter:end:rules.Rmd-->
+
+# Teooria
+
+Kui õhk oleks täiesti kuiv, siis see tähendaks, et selles puuduks veeaur. Kui õhk on täiesti märk, siis tähendab, et see on veeaurust nii küllastunud, et õhku või sellega kokkupuutes olevale õhust jahedamale pinnale tekivad tilgad. Absoluutne õhuniiskus tähendab, kui palju absoluutarvuliselt on õhus veeauru. Suhteline õhuniiskus tähendab, kui palju on õhus veeauru suhteliselt. Eelnevas kuiva õhu näites on õhus veeauru 0, täiesti märjas ehk veeaurust küllastunud õhus 1.
+
+Joonisel \@ref(fig:relative-humidity) on näidatud, kuidas suhteline õhuniiskus ja õhutemperatuur on omavahel seotud. Kuum õhk mahutab rohkem veeauru kui jahe õhk, sest selles on õhu osakesed üksteisest kaugemal ja rohkem on ruumi veeauru osakeste jaoks nende vahel. Seega, kui veeauru kogus õhus on muutumatu, on veeauru kuumas õhus suhteliselt vähem kui jahedas õhus. Kui veeauru on õhus 1, siis on õhk veeaurust küllastunud ja sellesse rohkem veeauru ei mahu, mis tähendab, et edasine õhu jahtumine toob kaasa veeauru kondenseerumise. Olek, milles õhk on veeaurust küllastunud, on seega kastepunkt.
+
+(ref:relative-humidity) @news_september
+
+```{r label = "relative-humidity", fig.cap = "Suhtelise õhuniiskuse ja õhu temperatuuri seos ((ref:relative-humidity)).", fig.margin = TRUE}
+include_svg("relative-humidity.webp")
+```
+
+Õhuniiskust saab mõõta psühromeetriga. Viimases on kaks termomeetrit: üks kuiva, teine niiske õhu jaoks. Kuiva õhu termomeetri näitu ei manipuleerita. Küll aga tehakse niiskeks teise termomeetri sensor, misjärel hakkab selle termomeetri näit vähenema, sest see niiskus aurub ja aurumisel võetakse ümbritsevast keskkonnast soojusenergiat, mistõttu ümbritsev keskkond jahtub. See jahtumine toimub siiski ainult selle termomeetri sensori ümber ja ei mõjuta teise termomeetri sensori ümbrust. Niiske termomeetri näit langeb, kuni see enam langeda ei saa, st on saavutatud olek, milles edasine aurumine ja kondenseerumine üksteist tasakaalustavad - on jõutud kastepunktini. Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt diagrammilt \@ref(fig:psychrometric-diagram) vaadata õhuniiskuse, sest eri temperatuuril on õhu võime endasse veeauru mahutada erinev ja need väärtused on katseliselt välja arvutatud.
+
+(ref:psychrometric-chart) @psychrometric-chart
+
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
+include_svg("0000Psych11x17US_SI_logos.pdf")
+```
+
+Absoluutse niiskuse arvutamiseks on juhendis valem
+
+```{=tex}
+\begin{align}
+a := \gamma_\text{w} \cdot 10^3 - 0.64 \cdot (t_\text{d} - t_\text{w}).
+(\#eq:a)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{M}{L^3} - \Theta,
+(\#eq:dimensional-analysis-for-a)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\gram\per\cubic\meter} - \unit{\kelvin}$.
+
+Valemit \@ref(eq:a) kasutatakse juhendis suhtelise niiskuse arvutamiseks:
+
+```{=tex}
+\begin{align}
+RH := \frac{a}{\gamma_\text{d} \cdot 10^3}.
+(\#eq:rh-in-instructions)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\frac{M}{L^3} - \Theta}{\frac{M}{L^3}} = 1 - \frac{\Theta}{\frac{M}{L^3}} = \frac{\Theta}{\frac{M}{L^3}},
+(\#eq:dimensional-analysis-for-rh-in-instructions)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\kelvin\per\gram\per\cubic\meter}$.
+
+<!--chapter:end:theory.Rmd-->
+
+# Praktika
+
+## Augusti psühromeetriga õhuniiskuse määramine
+
+Augusti ehk märk-kuiv-psühromeeter koosneb kahest termomeetrist, millest üks on vett imava materjaliga ühendatud veeanumaga (joonis \@ref(fig:wet-dry-psychrometer)). Selle veeanumasse lisasime ümbritseva keskkonna temperatuuril destilleeritud vett ja ootasime, kuni veeanumaga vett imava materjali kaudu ühendatud termomeetri näit langes. Et see kiiremini langeks, lehvitasime papitükiga selle alumise otsa peale, mille ümber oli vett imav materjal, tuult. Kui näidu langemine lõppes, märkisime mõlema termomeetri näidu tabelisse \@ref(tab:data-analysis).
+
+(ref:psychrometer) @psychrometer
+
+```{r label = "wet-dry-psychrometer", fig.cap = "Märg-kuiv-psühromeeter ((ref:psychrometer)).", fig.align = "center", out.height = "96%"}
+include_svg("wet-dry-psychrometer.svg")
+```
+
+## Aspiratsioonpsühromeetriga õhuniiskuse määramine
+
+Aspiratsioonpsühromeeter on kujutatud pildil \@ref(fig:aspiration-psychrometer). Aspiratsioonpsühromeeter, nagu nimetuseski, n-ö hingab [@aspirationspsychrometer]. 
+
+(ref:aspiration) @aspiration
+
+```{r label = "aspiration-psychrometer", fig.cap = "Aspiratsioonpsühromeeter ((ref:aspiration)).", fig.align = "center", fig.fullheight=TRUE, out.height="96%"}
+include_svg("Aspirations-Psychrometer-Fotomontage-65434-LRV1_3000px_2048x2048.svg")
+```
+
+Selles on kaks termomeetrit, millest üks on ühendatud niiskust imava jupiga. Kumb termomeeter ühendada, on vabalt valida. Üks jäetakse kuivtermomeetriks ja teine võetakse märgtermomeetriks. Materjal, mis imab vett, nt riidetükk keritakse ümber ühe termomeetri alumise otsa nagu näidatud pildil \@ref(fig:aspiration-psychrometer-installing-batist).
+
+(ref:aspiration-psychrometer-installing-batist) @aspiration_psychrometer_ru
+
+```{r label = "aspiration-psychrometer-installing-batist", fig.cap = "Aspiratsioonpsühromeetrisse batisti paigaldamine ((ref:aspiration-psychrometer-installing-batist)).", fig.margin = TRUE}
+include_svg("aspiration-psychrometer-installing-batist.png")
+```
+
+Termomeetri ülaosas on ventilaator, mis tirib õhku läbi mõlema termomeetri toru, mis soodustab aurustumist, mida on vaja niiske otsaga termomeetri jaoks. Kui mõlemast läbi ei tõmbaks, siis oleksid tingimused kummagi termomeetri jaoks erinevad ja me ei saaks näite võrrelda. meie ei kasutanud pildil \@ref(fig:aspiration-psychrometer) olevat 2600 eurot maksvat seadet, vaid meil oli kasutuses selline psühromeeter, mis töötab elektri jõul, nii et pole vaja ise lehvitada, puhuda ega keerutada, samuti mitte vedru üles keerata.
+
+Paigaldasime Assmanni aspiratsioonpsühromeetri ühe termomeetri alumise otsa ümber vett imava materjali, mille olime eelnevalt ümbritseva keskkonna temperatuuril oleva destilleeritud veega märjaks teinud, ja lülitasime seadme sisse. Ootasime, kuni niiske otsaga termomeetri näit vähenes. Teoreetiliselt vähenes ka kuivtermomeetri näit, sest õhku tõmmati ka selle otsa juurest läbi. Kui niiske otsaga termomeetri näit enam ei vähenenud, tegime kindlaks kummagi termomeetri näidu ja kandsime tabelisse \@ref(tab:data-analysis).
+
+## Õhu niiskuskarakteristikue määramine *Pasco* limasensoriga
+
+<!--chapter:end:practice.Rmd-->
+
+# Andmeanalüüs
+
+Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram).
+
+```{r label = "data-analysis"}
+method <- c(
+  "Augusti psühhomeeter",
+  "Assmanni psühhomeeter",
+  "Pasco
+ilmajaama
+andmete järgi
+niiskuse
+karakteristikud"
+)
+
+t_d <- c(24, 24.6, 26.3)
+SetUnitSystem("SI")
+T_d <- GetTKelvinFromTCelsius(t_d)
+RH_Pasco <- 30.8e-2
+t_w_Pasco <- GetTWetBulbFromRelHum(t_d[3], RH_Pasco, p_at)
+t_w <- c(16.5, 15.2, t_w_Pasco)
+T_w <- GetTKelvinFromTCelsius(t_w)
+p_w_H2O <- calculate_p_H2O(T_w)
+gamma_w <- calculate_gamma_H2O(p_w_H2O, T_w)
+p_dp <- calculate_p_dp(p_w_H2O, t_d, t_w)
+gamma_d <- calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
+a <- gamma_w * 1e3 - .64 * (t_d - t_w)
+p_d_H2O <- calculate_p_H2O(T_d)
+RH <- calculate_RH(p_dp, p_d_H2O)
+RH_according_to_instructions <- a / (gamma_d * 1e3) * 100
+RH_psychrolib <- GetRelHumFromTWetBulb(t_d, t_w, p_at)
+
+psychrometry <- data.frame(
+  method,
+  t_d,
+  T_d,
+  gamma_d,
+  t_w,
+  T_w,
+  a,
+  gamma_w,
+  p_dp,
+  RH,
+  RH_according_to_instructions,
+  RH_psychrolib
+)
+
+colnames(psychrometry) = c(
+  "Meetod või sensor",
+  "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
+  "$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
+  "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
+  "$\\frac{a}{\\unit{\\gram\\per\\cubic\\meter} - \\unit{\\degreeCelsius}}$",
+  "$\\frac{\\gamma_\\text{w}}{\\unit{\\kilogram\\per\\cubic\\meter}}$",
+  "$\\frac{p_\\text{dp}(\\ce{H_2O})}{\\unit{\\Pa}}$",
+  "$RH$",
+  "Vastavalt juhendile $\\frac{RH}{\\unit{\\percent}}$",
+  "Vastavalt \"psychrolib\"ile $RH$"
+)
+
+
+print_table(
+  psychrometry,
+  caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed, milles $w$ tähendab märga ja $d$ kuiva keskkonda ning $dp$ kastepunkti.",
+  digits = 5
+) %>%
+  column_spec(1, width = "6em") %>%
+  column_spec(11, width = "5em") %>%
+  column_spec(12, width = "5em") %>%
+  landscape()
+
+librarian::shelf("psychrolib")
+# psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
+# print(psychometrics)
+# GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
+GetDryAirVolume(t, p_at)
+# GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
+# GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
+GetSatVapPres(t)
+GetStandardAtmPressure(10)
+GetStationPressure(p_at, 10, t)
+# GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
+# GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
+# > 1/69.006*1000-.64*(24-16.5)
+# [1] 9.691493
+# > 9.691493/(1/45.863*1000)
+# [1] 0.4444809
+# > .5/755*1013.25
+# [1] 0.6710265
+librarian::shelf("MeTo")
+psyc_cons(elev = 2, P = 101.3)
+# > -5.8002206e3/(24+273.15) + 1.3914993e0 - 4.8640239e-2*(24+273.15) + 4.1764768e-5*(24+273.15)^2 - 1.4452093e-8*(24+273.15)^3 + 6.5459673e0*log((24+273.15))
+# [1] 8.001398
+# > exp(1)^8.001398
+# [1] 2985.128
+# > 2985.128*.018/8.314472/(24+273.15)
+# [1] 0.02174829
+
+```
+
+```{r label = "dp"}
+t_dp_Pasco <- 6.8
+T_dp_Pasco <- GetTKelvinFromTCelsius(t_dp_Pasco)
+p_dp <- calculate_p_H2O(T_dp_Pasco)
+p_d <- calculate_p_H2O(GetTKelvinFromTCelsius(t_d[3]))
+RH <- calculate_RH(p_dp, p_d)
+t_dp_r <- 5.9
+T_dp_r <- GetTKelvinFromTCelsius(t_dp_r)
+```
+
+Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_Pasco`}{\kelvin}$. Selle kaudu arvutatud õhuniiskus oli  `r RH`.
+
+Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.
+
+<!--chapter:end:data-analysis.Rmd-->
+
+\onecolumn
+
+```{=html}
+<!--
+The bib chunk below must go last in this document according to how R Markdown renders.  More info is at http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
+-->
+```
+```{=html}
+<!-- 
+If you'd like to change the name of the bibliography to something else,
+delete "References" and replace it.
+-->
+```
+# Kasutatud allikad {.unnumbered}
+
+\hyphenpenalty=10000
+
+```{=html}
+<!--
+This manually sets the header for this unnumbered chapter.
+-->
+```
+\markboth{References}{References}
+
+```{=html}
+<!--
+To remove the indentation of the first entry.
+-->
+```
+\noindent
+
+\setlength{\parindent}{-0.20in}
+
+<!--chapter:end:99-references.Rmd-->
+
