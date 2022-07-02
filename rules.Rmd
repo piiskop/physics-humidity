@@ -149,60 +149,64 @@ kus $n_\mathrm{B}$ on (aine)hulk [@haynes_2014_crc, p. 2-8]. Dimensionaalanalü�
 ```
 
 mistõttu ühik on $\unit{\kilogram\per\mole}$.
+
+
+Lähtemolaarmasside arvutamiseks kasutan [@Mills1993-oj, pp. 101-103, 105] andmeid:
+
 ```{r label = "molar-masses"}
-M_H <- (1.00782503512 * 99.9851e-2 + 2.01410177924 * 0.0151e-2) * 1e-3
-M_He <- (3.016029314 * 0.0001373e-2 + 4.00260325 * 99.9998633e-2) * 1e-3
-M_C <- (12 * 98.903 + 13.00335482617 + 1.103e-2) * 1e-3
-M_N <- (14.00307400226 * 99.635e-2 + 15.000108974 * 0.367e-2) * 1e-3
-M_O <- (15.994914636 * 99.76215e-2 + 16.99913124 * 0.0383e-2 + 17.9991604 * 0.20012e-2) * 1e-3
-M_Ne <- (19.992435622 * 90.483e-2 + 20.993842821 * 0.271e-2 + 21.991383118 * 9.253e-2) * 1e-3
-M_Ar <- (35.9675455229 * 0.3373e-2 + 37.9627326 * 0.0631e-2 + 39.962383714 * 99.6003e-2) * 1e-3
-M_Kr <- (77.920397 * 0.352e-2 + 79.916381 * 2.252e-2 + 81.913483 * 11.61e-2 + 82.9141354 * 11.51e-2 + 83.9115074 * 57.03e-2 + 85.910617 * 17.32e-2) * 1e-3
-M_Xe <- (123.90589422 * 0.101e-2 + 125.904282 * 0.091 + 127.9035312172 * 1.913 + 128.904780121 * 26.5e-2 + 129.9035094172 * 4.11e-2 + 130.905073 * 21.243e-2 + 131.904145 * 27e-2 + 133.905396 * 10.42e-2 + 135.907215 * 8.91e-2) * 1e-3
+M_H_1_TO_M_H <- 99.9851e-2
+M_H <- (1.00782503512 * M_H_1_TO_M_H + 2.01410177924 * (1 - M_H_1_TO_M_H)) * 1e-3
+M_He_1_TO_M_He <- 0.0001373e-2
+M_He <- (3.016029314 * M_He_1_TO_M_He + 4.00260325 * (1 - M_He_1_TO_M_He)) * 1e-3
+M_C_1_TO_M_C <- 98.903e-2
+M_C <- (12 *  M_C_1_TO_M_C + 13.00335482617 * (1 - M_C_1_TO_M_C)) * 1e-3
+M_N_1_TO_M_N <- 99.635e-2
+M_N <- (14.00307400226 * M_N_1_TO_M_N + 15.000108974 * (1 - 99.635e-2)) * 1e-3
+M_O_TO_M_O <- c(99.76215e-2, 0.0383e-2)
+M_O <- (15.994914636 * M_O_TO_M_O[1]  + 16.99913124 * M_O_TO_M_O[2] + 17.9991604 * (1 - sum(M_O_TO_M_O))) * 1e-3
+M_Ne_TO_M_Ne <- c(90.483e-2, 0.271e-2)
+M_Ne <- (19.992435622 * M_Ne_TO_M_Ne[1] + 20.993842821 * M_Ne_TO_M_Ne[2]  + 21.991383118 * (1 - sum(M_Ne_TO_M_Ne))) * 1e-3
+M_Ar_TO_M_Ar <- c(0.3373e-2, 0.0631e-2)
+M_Ar <- (35.9675455229 * M_Ar_TO_M_Ar[1] + 37.9627326 * M_Ar_TO_M_Ar[2] + 39.962383714 * (1 - sum(M_Ar_TO_M_Ar))) * 1e-3
+M_Kr_TO_M_Kr <- c(0.352e-2, 2.252e-2, 11.61e-2, 11.51e-2, 57.03e-2)
+
+M_Kr <- (77.920397 * M_Kr_TO_M_Kr[1] + 79.916381 * M_Kr_TO_M_Kr[2] + 81.913483 * M_Kr_TO_M_Kr[3] + 82.9141354 * M_Kr_TO_M_Kr[4] + 83.9115074 * M_Kr_TO_M_Kr[5] + 85.910617 * (1 - sum(M_Kr_TO_M_Kr))) * 1e-3
+
+M_Xe_TO_M_Xe <- c(0.101e-2, 0.091e-2, 1.913e-2, 26.5e-2, 4.11e-2, 21.24e-2, 27e-2, 10.42e-2)
+
+M_Xe <- (123.90589422 * M_Xe_TO_M_Xe[1] + 125.904282 * M_Xe_TO_M_Xe[2] + 127.9035312172 * M_Xe_TO_M_Xe[3] + 128.904780121 * M_Xe_TO_M_Xe[4] + 129.9035094172 * M_Xe_TO_M_Xe[5] + 130.905073 * M_Xe_TO_M_Xe[6] + 131.904145 * M_Xe_TO_M_Xe[7] + 133.905396 * M_Xe_TO_M_Xe[8] + 135.907215 * (1 - sum(M_Xe_TO_M_Xe))) * 1e-3
 
 M_H2O <- M_H * 2 + M_O
 M_H2O_haynes <- 18.015268e-3
+
 M_air <- 28.966e-3
 
 ```
 
 Vee molaarmass on vastavalt [@haynes_2014_crc, p. 6-9] $`r M_H2O_haynes` \times \unit{\kilogram\per\mole}$ ning minu arvutustele $`r M_H2O` \times \unit{\kilogram\per\mole}$. Kuna enda äralöök on kindlam kui loodetav vastase aut, siis kasutan edaspidi arvutustes enda arvutusi, kui pole sätestatud teisiti.
 
-Õhu molaarmassi saaks ka otse teatmikust võtta, aga tahan ikkagi näidata, millest see on kokku arvutatud. Õhk koosneb mitmest komponendist, millest kõik peale süsihappegaasi ja hapniku on piisavalt püsiva osalusega. Süsihappegaasi sisaldus õhus varieerub pidevalt. Mida rohkem on õhus süsihappegaasi, seda vähem on kuivas õhus hapnikku ja vastupidi, sest põlemises liidab süsinik endaga dihapniku õhust. Õhu molaarmass muutub seega sõltuvalt sellest, kui palju süsinikku kas õhku lisandub või sellest eraldub. Praegu elame perioodis, milles süsinikku kuiva õhku lisandub. Õhu koostist, muuhulgas süsinikdioksiidi sisaldust mõõdetakse iga tund. Leidsin Barrow Atmospheric Baseline Observatory' andmed, mis on kogutud $\qty{27.46}{\meters}$ kõrguselt, mis on umbes see kõrgus, kus me oma eksperimente tegime ja mis on kõige kaasaegsemad [@NOAA_GML_CCGG_Group2019-oq]. Kuigi [@RN23688432420080101, p. 1] mainitakse, et praktiline oleks kasutada selliste andmete põhjal tehtud projektsioonväärtust, samas kurdetakse, et aktuaalset väärtust on keeruline leida [@RN23688432420080101, p. 3], soovin mina kasutada viimati väljamõõdetud väärtust, sest sellest pole liiga palju aega möödunud. Viimatised andmed on nimelt pärit 2021. aasta viimase kuu esimesest päevast, millest praeguse aruande kirjutamiseni on möödas veidi üle poole aasta. Loodan põhistada oma soovi sellega, et need andmed pole normaalselt jaotunud, mistõttu ei saa usaldusväärset regressiooni nende põhjal teostada, et ekstrapoleerida tänast väärtust.
+Õhu molaarmassi saaks ka otse teatmikust võtta, aga tahan ikkagi näidata, millest see on kokku arvutatud. Õhk koosneb mitmest komponendist, millest kõik peale süsihappegaasi ja hapniku on piisavalt püsiva osalusega. Süsihappegaasi sisaldus õhus varieerub pidevalt. Mida rohkem on õhus süsihappegaasi, seda vähem on kuivas õhus hapnikku ja vastupidi, sest põlemises liidab süsinik endaga dihapniku õhust. Õhu molaarmass muutub seega sõltuvalt sellest, kui palju süsinikku kas õhku lisandub või sellest eraldub. Praegu elame perioodis, milles süsinikku kuiva õhku lisandub. Õhu koostist, muuhulgas süsinikdioksiidi sisaldust mõõdetakse iga tund. Leidsin Barrow Atmospheric Baseline Observatory' andmed, mis on kogutud $\qty{27}{\meter}$ kõrguselt, mis on umbes see kõrgus, kus me oma eksperimente tegime ja mis on kõige kaasaegsemad [@NOAA_GML_CCGG_Group2019-oq]. Kuigi [@RN23688432420080101, p. 1] mainitakse, et praktiline oleks kasutada selliste andmete põhjal tehtud projektsioonväärtust, samas kurdetakse, et aktuaalset väärtust on keeruline leida [@RN23688432420080101, p. 3], soovin mina kasutada viimati väljamõõdetud väärtust, sest sellest pole liiga palju aega möödunud. Viimatised andmed on nimelt pärit 2021. aasta viimasest päevast, millest praeguse aruande kirjutamiseni on möödas veidi üle poole aasta. Süsinikdioksiidi osa kuivas õhus aastais 1973 kuni 2021 on esitatud joonisel \@ref(fig:co2-in-air).
 
-```{r}
-CO2_in_air <- read.table("co2_brw_surface-insitu_1_ccgg_HourlyData.txt", header = TRUE, sep = "", dec = ".")
+(ref:x-citation) @Mills1993-oj, p. 84
+
+```{r label = "co2-in-air", fig.cap="Süsinikdioksiidi osa kuivas õhus aastais 1973 kuni 2021 ((ref:x-citation))."}
+CO2_in_air <- read.table("co2_brw_surface-insitu_1_ccgg_DailyData.txt", header = TRUE, sep = "", dec = ".")
 
 librarian::shelf(
   ggplot2,
-  latex2exp,
-  ggpubr # for stat_regline_equation
+  latex2exp
 )
 
 CO2_in_air <- subset(CO2_in_air, value > -999.99)
-hist(CO2_in_air$value)
+
 ggplot(data = CO2_in_air, aes(x = time_decimal, y = value)) + geom_point() +
-  labs(x = TeX("$\\frac{\\Delta(t)}{s}$"), y = TeX("$\\frac{\\frac{E}{\\Delta(m)}}{\\frac{J}{kg}}$")) +
-  geom_smooth(formula = "y ~ x", method = "lm", se = FALSE) +
-  stat_regline_equation()
--3200+1.8*2022.5
-income.happiness.lm <- lm(value ~ time_decimal, data = CO2_in_air)
-
-summary(income.happiness.lm)
-par(mfrow=c(2,2))
-plot(income.happiness.lm)
-par(mfrow=c(1,1))
-ks.test(CO2_in_air$value,"pnorm")
-
+  labs(x = TeX("$\\frac{t}{s}$"), y = TeX("$\\frac{x \\times 10^{-6}}{\\frac{mol({CO_2})}{mol(air)}}$"))
 ```
 
 
 Õhu molaarmassi võib võtta teatmikust, aga võib ka õhu koostisosade molaarmasside põhjal ise arvutada, et näha, millest õhu molaarmass koosneb. [@haynes_2014_crc, p. 6-164] põhjal esinevad lämmastik, hapnik ja vesinik kaksikaatomist koosneva lihtainena. Õhu koostis on üldiselt püsiv, kuid seda mõjutab süsihappe gaasi poolt hapniku asendamine. Viimast 
 
-Todo:
-süsihappe gaasi trend
-tglt kasutada viimast väärtust
-arvutada õh umolaarmass
+(ref:m-trace-citation) @RN23688432420080101, p. 4
 
 ```{r label = "consistence-of-air"}
 SUBSTANCE <- c(
@@ -222,30 +226,94 @@ SUBSTANCE <- c(
   "$\\ce{CO}$"
 )
 
-# DELTA_CO2 <- 2036 - 2005format(Sys.Date(), "%Y") - 2005
-# PART <- c(
-#   780818,
-#   209435,
-#   9332,
-#   385*,
-#   18.2,
-# 
-#   5.2,
-#   1.1,
-#   .1,
-#   1.5,
-#   .5,
-# 
-#   .3,
-#   .2
-# )
+M_O2 <- M_O * 2
+M_N2 <- M_N * 2
+
+M <- c(
+  M_N2,
+  M_O2,
+  M_Ar,
+  M_C + M_O2,
+  M_Ne,
+  
+  M_He,
+  M_Kr,
+  M_Xe,
+  M_C + M_H * 4,
+  M_H * 2,
+  
+  M_N2 + M_O,
+  M_C + M_O
+)
+
+x_CO2 <- 420.99
+DELTA_CO2 <- x_CO2 - 385
+PART <- c(
+  780818,
+  209435 - DELTA_CO2,
+  9332,
+  x_CO2,
+  18.2,
+
+  5.2,
+  1.1,
+  .1,
+  1.5,
+  .5,
+
+  .3,
+  .2
+)
+
+M_psi <- M * PART
+
+composition_of_air <- data.frame(SUBSTANCE, M, PART, M_psi)
+mean_trace <- mean(M[5:length(M)])
+psi_trace <- 1e6 - sum(PART)
+
+composition_of_air[nrow(composition_of_air) + 1, ] <- c(
+  "ülejäänud jälgained",
+  mean_trace,
+  psi_trace,
+  mean_trace * psi_trace
+)
+
+composition_of_air[, 2:4] <- as.numeric(unlist(composition_of_air[, 2:4]))
+
+colnames(composition_of_air) <- c(
+  "Koostisosa",
+  "Molaarmass $\\frac{M}{\\unit{\\kilogram\\per\\mol}}$",
+  "Moolifraktsioon $\\frac{\\psi}{\\unit{\\micro\\mole(\\text{i})\\per\\mole(\\text{air})}}$",
+  "Osalus molaarmassis $\\frac{M \\cdot \\psi}{\\unit{\\milli\\gram\\per\\mole}}$"
+)
+
+
+librarian::shelf(
+  "dplyr",
+  "janitor",
+  "kableExtra"
+)
+
+composition_of_air <- adorn_totals(dat = composition_of_air, name = "Kokku", where = "row", fill = "", na.rm = TRUE, c(3, 4))
+M_air_2008 <- 28.965369e-3
+M_air <- composition_of_air[nrow(composition_of_air), 4] * 1e-6
+delta_M_air <- (M_air - M_air_2008)
+
+print_table(
+  data_frame = composition_of_air,
+  caption = "Kuiva õhu koostis.",
+  digits = 3
+) %>%
+  column_spec(4, width = "6em") %>%
+  footnote(number = c(
+    paste("Süsinikdioksiidi molaarmass on 2021. aasta lõpu seisuga $\\\\qty{", DELTA_CO2, "}{\\\\kilogram\\\\per\\\\mole}$ võrra suurem kui 2008. aastas, mistõttu on õhu molaarmass $\\\\qty{", signif(delta_M_air, digits = 2), "}{\\\\kilogram\\\\per\\\\mole}$ võrra suurem."),
+    "Ülejäänud jälgainete molaarmass on viimase kaheksa õhu komponendi ehk jälggaaside molaarmasside aritmeetiline keskmine, mis minu arvutustes erineb (ref:m-trace-citation) kirjapandud molaarmassist."
+    ), escape = F, footnote_as_chunk = T, threeparttable = TRUE)
 
 ```
-```{r}
-```
-We found a significant relationship between income and happiness (p < 0.001, R2 = 0.73 ± 0.0193), with a 0.73-unit increase in reported happiness for every $10,000 increase in income.
 
-Kuiva õhu molaarmass on vastavalt [@haynes_2014_crc, p. 6-164]
+
+Kuiva õhu molaarmass on vastavalt minu arvutustele $\qty{`r M_air`}{\kilogram\per\mole}$, oli 2008. aastas vastavalt [@RN23688432420080101, p. 4]  $\qty{`r M_air_2008`}{\kilogram\per\mole}$, on vastavalt [@haynes_2014_crc, p. 6-164]
 
 $$\mathrm{28.9655 \times \frac{\cancel{g}}{mol} \times \frac{10^{-3} \times kg}{1 \times \cancel{g}} = 2.89655 \times 10^{-2} \times \frac{kg}{mol}},$$
 
