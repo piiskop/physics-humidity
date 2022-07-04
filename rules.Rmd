@@ -32,27 +32,6 @@ T := t + 237.15,
 
 mille ühik on $\unit{\kelvin}$ [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 8].
 
-## Energia, töö, soojushulk
-
-
-```{=tex}
-\begin{align}
-E := \int{\vec{F}} \cdot \mathrm{d}(s) = \int{m \cdot \vec{a}} \cdot \mathrm{d}(s),
-(\#eq:energy)
-\end{align}
-```
-
-milles $\mathrm{d}(s)$ on lõputult väike nihe [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
-
-```{=tex}
-\begin{align}
-\mathrm{\frac{L \cdot M}{T^2} \cdot L = \frac{L^2 \cdot M}{T^2}},
-(\#eq:dimensional-analysis-for-energy)
-\end{align}
-```
-
-mistõttu ühik on $\unit{\frac{m^2 \cdot kg}{s^2}}$ või lühemalt $\unit{m \cdot N}$ või veelgi lühemalt $\unit{J}$.
-
 ## Rõhk
 
 ```{=tex}
@@ -126,6 +105,133 @@ Küllastusrõhk vedela vee kohal temperatuurivahemikus 0 kuni 200°C on antud va
 ```
 
 milles *T* on absoluutne temperatuur [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14].
+
+## Energia, töö, soojushulk
+
+
+```{=tex}
+\begin{align}
+E := \int{\vec{F}} \cdot \mathrm{d}(s) = \int{m \cdot \vec{a}} \cdot \mathrm{d}(s),
+(\#eq:energy)
+\end{align}
+```
+
+milles $\mathrm{d}(s)$ on lõputult väike nihe [@haynes_2014_crc, p. 2-2]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L \cdot M}{T^2} \cdot L = \frac{L^2 \cdot M}{T^2}},
+(\#eq:dimensional-analysis-for-energy)
+\end{align}
+```
+
+mistõttu ühik on $\unit{\frac{m^2 \cdot kg}{s^2}}$ või lühemalt $\unit{m \cdot N}$ või veelgi lühemalt $\unit{J}$.
+
+Siseenergia muut:
+
+```{=tex}
+\begin{align}
+\Delta(U) = q + E
+(\#eq:internal-energy)
+\end{align}
+```
+
+[@Mills1993-oj, p. 56]
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L^2 \cdot M}{T^2}},
+(\#eq:dimensional-analysis-for-internal-energy)
+\end{align}
+```
+
+mille põhjal on ühik $\unit{\frac{m^2 \cdot kg}{s^2}}$ või lühemalt $\unit{m \cdot N}$ või veelgi lühemalt $\unit{J}$.
+
+Entalpia:
+
+```{=tex}
+\begin{align}
+H := U + p \cdot V
+(\#eq:enthalpy)
+\end{align}
+```
+
+[@Mills1993-oj, p. 56]. Dimensionaalanalüüs:
+
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L^2 \cdot M}{T^2} + \frac{M}{L \cdot T^2} \cdot L^3 = \frac{L^2 \cdot M}{T^2}},
+(\#eq:dimensional-analysis-for-enthalpy)
+\end{align}
+```
+
+mille põhjal ühik on $\unit{\frac{m^2 \cdot kg}{s^2}}$ või lühemalt $\unit{m \cdot N}$ või veelgi lühemalt $\unit{J}$.
+
+Erientalpia:
+
+```{=tex}
+\begin{align}
+h := \frac{H}{m}
+(\#eq:specific-enthalpy)
+\end{align}
+```
+
+[@Mills1993-oj, p. 16]. Dimensionaalanalüüs:
+
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L^2 \cdot M}{T^2 \cdot M} = \frac{L^2}{T^2}},
+(\#eq:dimensional-analysis-for-specific-enthalpy)
+\end{align}
+```
+
+mille põhjal ühik on $\unit{\frac{m^2}{s^2}}$ või lühemalt $\unit{\joule\per\kilogram}$.
+
+Soojusmahtuvus konstantsel rõhul:
+
+```{=tex}
+\begin{align}
+C_p := (\frac{\partial{H}}{\partial{T}})_p
+(\#eq:heat-capacity)
+\end{align}
+```
+
+[@Mills1993-oj, p. 56, @haynes_2014_crc, p. 2-69]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\mathrm{\frac{L^2 \cdot M}{T^2}}}{\Theta} = \frac{\mathrm{L^2 \cdot M}}{\mathrm{T^2} \cdot \Theta},
+(\#eq:dimensional-analysis-for-heat-capacity)
+\end{align}
+```
+
+mille põhjal ühik on $\unit{\meter\squared\kilogram\per\second\squared\per\kelvin}$ või lühemalt $\unit{\meter\newton\per\kelvin}$ või veelgi lühemalt $\unit{\joule\per\kelvin}$.
+
+Erisoojus konstantsel rõhul:
+
+```{=tex}
+\begin{align}
+c_p := \frac{C_p}{m}
+(\#eq:specific-heat-capacity)
+\end{align}
+```
+
+[@Mills1993-oj, p. 16, @haynes_2014_crc, pp. 2-55, 2-65]. Dimensionaalanalüüs:
+
+
+```{=tex}
+\begin{align}
+\frac{\frac{\mathrm{L^2 \cdot M}}{\mathrm{T^2} \cdot \Theta}}{\mathrm{M}} = \frac{\mathrm{L^2}}{\mathrm{T^2} \cdot \Theta},
+(\#eq:dimensional-analysis-for-specific-heat-capacity)
+\end{align}
+```
+
+mille põhjal ühik on $\unit{\meter\squared\per\second\squared\per\kelvin}$ või lühemalt $\unit{\joule\per\kelvin\per\kilogram}$.
+
 
 ## Molaarmass
 
@@ -271,6 +377,23 @@ composition_of_air <- data.frame(SUBSTANCE, M, PART, M_psi)
 mean_trace <- mean(M[5:length(M)])
 psi_trace <- 1e6 - sum(PART)
 
+colnames(composition_of_air) <- c(
+  "Koostisosa",
+  "Molaarmass $\\frac{M}{\\unit{\\kilogram\\per\\mol}}$",
+  "Moolifraktsioon $\\frac{\\psi}{\\unit{\\micro\\mole(\\text{i})\\per\\mole(\\text{air})}}$",
+  "Osalus molaarmassis $\\frac{M \\cdot \\psi}{\\unit{\\milli\\gram\\per\\mole}}$"
+)
+
+librarian::shelf(
+  "dplyr",
+  "janitor",
+  "kableExtra"
+)
+
+
+composition_of_air <- arrange(composition_of_air, desc(`Osalus molaarmassis $\\frac{M \\cdot \\psi}{\\unit{\\milli\\gram\\per\\mole}}$`))
+
+
 composition_of_air[nrow(composition_of_air) + 1, ] <- c(
   "ülejäänud jälgained",
   mean_trace,
@@ -280,27 +403,14 @@ composition_of_air[nrow(composition_of_air) + 1, ] <- c(
 
 composition_of_air[, 2:4] <- as.numeric(unlist(composition_of_air[, 2:4]))
 
-colnames(composition_of_air) <- c(
-  "Koostisosa",
-  "Molaarmass $\\frac{M}{\\unit{\\kilogram\\per\\mol}}$",
-  "Moolifraktsioon $\\frac{\\psi}{\\unit{\\micro\\mole(\\text{i})\\per\\mole(\\text{air})}}$",
-  "Osalus molaarmassis $\\frac{M \\cdot \\psi}{\\unit{\\milli\\gram\\per\\mole}}$"
-)
 
-
-librarian::shelf(
-  "dplyr",
-  "janitor",
-  "kableExtra"
-)
-
-composition_of_air <- adorn_totals(dat = composition_of_air, name = "Kokku", where = "row", fill = "", na.rm = TRUE, c(3, 4))
+composition_of_air_with_totals <- adorn_totals(dat = composition_of_air, name = "Kokku", where = "row", fill = "", na.rm = TRUE, c(3, 4))
 M_air_2008 <- 28.965369e-3
-M_air <- composition_of_air[nrow(composition_of_air), 4] * 1e-6
+M_air <- composition_of_air_with_totals[nrow(composition_of_air_with_totals), 4] * 1e-6
 delta_M_air <- (M_air - M_air_2008)
 
 print_table(
-  data_frame = composition_of_air,
+  data_frame = composition_of_air_with_totals,
   caption = "Kuiva õhu koostis.",
   digits = 3
 ) %>%
@@ -461,6 +571,7 @@ ggplot(data = density_of_saturated_H2O, aes(x = T, y = p_H2O)) +
 
 ```
 
+
 ## Niiskus
 
 niiskus
@@ -584,10 +695,141 @@ print_table(
 niiskuse suhe
 : proovis oleva veeauru massi ja kuiva õhu massi suhe
 
-dew point water on glass kim wilde
+
+```{r label = "W"}
+M_w_TO_M_d <- M_H2O / M_air
+#' Return humidity ratio of saturated air given dry-bulb temperature.
+#'
+#' @param T_d A numeric vector of dry-bulb temperature in [SI]
+#'
+#' @return A numeric vector of humidity ratio of saturated air in kg_H2O kg_Air-1 [SI]
+#'
+#' @references
+#' ASHRAE Handbook - Fundamentals (2017) ch. 1 eqn 36, solved for W
+#'
+#' @examples
+#' calculate_W(298.15)
+#'
+#' @export
+calculate_W_saturated <- function(T_d) {
+  
+    if (T_d < 0) {
+      stop(paste("The absolute temperature can't be negative. The current absolute temperature is", T_d, "K."))
+    }
+
+    p_H2O_saturated <- calculate_p_H2O(T_d)
+    W_saturated <- M_w_TO_M_d * p_H2O_saturated / (p_at - p_H2O_saturated)
+    return(W_saturated)
+}
+
+#' Return humidity ratio given dry-bulb temperature, wet-bulb temperature, and pressure.
+#' 
+#' This formula only works for temperatures starting from the freezing point of water up.
+#'
+#' @param T_d_ A numeric vector of dry-bulb temperature in degreeF [IP] or degreeC [SI]
+#' @param T_w_ A numeric vector of wet-bulb temperature in degreeF [IP] or degreeC [SI]
+#' @param c_p_d specific heat capacity of dry air
+#'
+#' @return A numeric vector of humidity ratio in lb_H2O lb_Air-1 [IP] or kg_H2O kg_Air-1 [SI]
+#'
+#' @references
+#' ASHRAE Handbook - Fundamentals (2017) ch. 1 eqn 33 and 35
+#'
+#' @examples
+#' SetUnitSystem("IP")
+#' GetHumRatioFromTWetBulb(80:100, 77.0, 14.175)
+#'
+#' SetUnitSystem("SI")
+#' GetHumRatioFromTWetBulb(20:30, 19.0, 95461.0)
+#'
+#' @export
+calculate_W <- function(T_d, T_w, c_p_d) {
+
+  if (any(T_w > T_d)) {
+      stop(paste("Wet bulb temperature is above dry bulb temperature. The current wet bulb temperature is", T_w, "K and the current dry bulb temperature is", T_d, "K."))
+  }
+
+  t_d <- GetTCelsiusFromTKelvin(T_d)
+  t_w <- GetTCelsiusFromTKelvin(T_w)
+  
+  Wsstar <- calculate_W_saturated(T_w)
+
+  # W <- ((2501.0 - 2.326 * t_w) * Wsstar - 1.006 * (t_d - t_w)) / (2501.0 + 1.86 * t_d - 4.186 * t_w)
+
+  W <- (c_p_d * (T_w - T_d) + Wsstar )
+  return(W)
+}
+
+```
+
+
+Kasutan niiskuse suhte valemis molaarmassi valemit \@ref(eq:molar-mass) ja edasi ideaalse rõhu gaasi valemit \@ref(eq:pressure-of-ideal-gas):
 
 ```{=tex}
 \begin{align}
-W := \frac{m(\ce{H_2O})}{m(\text{air})} =
+W := \frac{m(\ce{H_2O})}{m(\text{air})} =\frac{m_w}{m_d} = \frac{M_w \cdot n_w}{M_d \cdot n_d} = \frac{M_w \cdot p_w \cdot \cancel{V} \cdot \cancel{R} \cdot \cancel{T}}{\cancel{R} \cdot \cancel{T} \cdot M_d \cdot p_d \cdot \cancel{V}} = \frac{M_w \cdot p_w}{M_d \cdot p_d} = \frac{`r M_w_TO_M_d` \times p_w}{p - p_w}.
+(\#eq:humidity-ratio)
 \end{align}
 ``` 
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{\frac{M}{T^2 \cdot L}}{\frac{M}{T^2 \cdot L}}} = 1.
+(\#eq:dimensional-analysis-for-humidity-ratio)
+\end{align}
+``` 
+
+
+Niiske õhu erientalpia, millesse teen erientalpia asendused kasutades erientalpia üldvalemit \@ref(eq:enthalpy) ja erisoojuse valemit \@ref(eq:specific-enthalpy):
+
+```{=tex}
+\begin{align}
+h := h_d + W \cdot h_g = c_p(\text{dry air}) \cdot T + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
+(\#eq:enthalpy-of-moist-air)
+\end{align}
+``` 
+
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15]. Dimensioonanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{L^2}{T^2}},
+(\#eq:dimensional-analysis-for-enthalpy-of-moist-air)
+\end{align}
+``` 
+
+mille põhjal ühik on $\unit{\frac{m^2}{s^2}}$ või lühemalt $\unit{\joule\per\kilogram}$.
+
+Adiabaatilises protsessis küllastusentalpia:
+
+```{=tex}
+\begin{align}
+h_\text{sat} :&= h + (W_\text{sat} - W) \cdot h_w = h_d + W \cdot h_g + (W_\text{sat} - W) \cdot h_w\\
+&= c_p(\text{dry air}) \cdot T_d + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d) + (W_\text{sat} - W) \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
+&= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)
+(\#eq:enthalpy-of-saturated-air)
+\end{align}
+``` 
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15], [@numerically].
+
+Avaldan küllastusentalpia valemist \@ref(eq:enthalpy-of-saturated-air) niiskuse suhte:
+
+```{=tex}
+\begin{align}
+c_p(\text{dry air}) \cdot T_d + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d)\\
++ W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot T_w - W \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
+= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)\\
+W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w) \\
+= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)\\
+- c_p(\text{dry air}) \cdot T_d - W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
+= c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w - c_p(\text{sat, liquid water}) \cdot T_w)\\
+W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w - c_p(\text{sat, liquid water}) \cdot T_w)}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w}\\
+W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + (c_p(\text{sat, steam}) - c_p(\text{sat, liquid water})) \cdot T_w)}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w}
+(\#eq:humidity-ratio-using-enthalpies)
+\end{align}
+``` 
+
+
+dew point water on glass kim wilde
