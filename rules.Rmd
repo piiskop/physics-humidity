@@ -713,7 +713,7 @@ M_w_TO_M_d <- M_H2O / M_air
 #' @export
 calculate_W_saturated <- function(T_d) {
   
-    if (T_d < 0) {
+    if (any(T_d) < 0) {
       stop(paste("The absolute temperature can't be negative. The current absolute temperature is", T_d, "K."))
     }
 
@@ -729,6 +729,9 @@ calculate_W_saturated <- function(T_d) {
 #' @param T_d_ A numeric vector of dry-bulb temperature in degreeF [IP] or degreeC [SI]
 #' @param T_w_ A numeric vector of wet-bulb temperature in degreeF [IP] or degreeC [SI]
 #' @param c_p_d specific heat capacity of dry air
+#' @param delta_vap_h the heat of vaporization
+#' @param c_p_sat_steam the specific heat capacity of the saturated steam
+#' @param c_p_sat_liquid_h2o the specific heat capacity of the saturated liquid water
 #'
 #' @return A numeric vector of humidity ratio in lb_H2O lb_Air-1 [IP] or kg_H2O kg_Air-1 [SI]
 #'
@@ -736,14 +739,10 @@ calculate_W_saturated <- function(T_d) {
 #' ASHRAE Handbook - Fundamentals (2017) ch. 1 eqn 33 and 35
 #'
 #' @examples
-#' SetUnitSystem("IP")
-#' GetHumRatioFromTWetBulb(80:100, 77.0, 14.175)
-#'
-#' SetUnitSystem("SI")
-#' GetHumRatioFromTWetBulb(20:30, 19.0, 95461.0)
+#' calculate_W(20:30, 19.0, 95461.0)
 #'
 #' @export
-calculate_W <- function(T_d, T_w, c_p_d) {
+calculate_W <- function(T_d, T_w, c_p_d, delta_vap_h, c_p_sat_steam, c_p_sat_liquid_h2o) {
 
   if (any(T_w > T_d)) {
       stop(paste("Wet bulb temperature is above dry bulb temperature. The current wet bulb temperature is", T_w, "K and the current dry bulb temperature is", T_d, "K."))
@@ -756,8 +755,34 @@ calculate_W <- function(T_d, T_w, c_p_d) {
 
   # W <- ((2501.0 - 2.326 * t_w) * Wsstar - 1.006 * (t_d - t_w)) / (2501.0 + 1.86 * t_d - 4.186 * t_w)
 
-  W <- (c_p_d * (T_w - T_d) + Wsstar )
+  W <- (c_p_d * (T_w - T_d) + Wsstar * (delta_vap_h + (c_p_sat_steam - c_p_sat_liquid_h2o) * T_w)) / (delta_vap_h + c_p_sat_steam * T_d - c_p_sat_liquid_h2o * T_w)
+
   return(W)
+}
+
+#' Return vapor pressure given humidity ratio and pressure.
+#'
+#' @param HumRatio A numeric vector of humidity ratio in kg_H2O kg_Air-1 [SI]
+#' @param Pressure A numeric vector of atmospheric pressure in Pa [SI]
+#'
+#' @return A numeric vector of partial pressure of water vapor in moist air in Pa [SI]
+#'
+#' @references
+#' ASHRAE Handbook - Fundamentals (2017) ch. 1 eqn 20 solved for pw
+#'
+#' @examples
+#' calculate_P_from_W(seq(0.02, 0.03, 0.001), 95461)
+#'
+#' @export
+calculate_P_from_W <- function(W) {
+    return(p_at * W / (M_w_TO_M_d + W))
+}
+
+calculate_Tdp <- function(W) {
+  p_w <- calculate_P_from_W(W)
+  alpha <- log(p_w)
+  T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+  return(T_dp)
 }
 
 ```
@@ -786,7 +811,7 @@ Niiske õhu erientalpia, millesse teen erientalpia asendused kasutades erientalp
 
 ```{=tex}
 \begin{align}
-h := h_d + W \cdot h_g = c_p(\text{dry air}) \cdot T + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
+h := \frac{H}{m} = \frac{H_d + H_w}{m} = h_d + \frac{h_w \cdot m_w}{m_d} = h_d + W \cdot h_w = c_p(\text{dry air}) \cdot T3 + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
 (\#eq:enthalpy-of-moist-air)
 \end{align}
 ``` 
@@ -831,5 +856,22 @@ W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\t
 \end{align}
 ``` 
 
+Auru rõhk niiskuse suhte kaudu:
+
+```{=tex}
+\begin{align}
+p_w := p * W / (`r M_w_TO_M_d` + W).
+(\#eq:vapor-pressure-from-humidity-ratio)
+\end{align}
+``` 
+
+Kastepunkt:
+
+```{=tex}
+\begin{align}
+T_dp <- 6.54 + 14.526 * ln(p_w) + .7389 * (ln(p_w))^2 + .09486 * (ln(p_w))^3 + .4569 * p_w^.1984 - 273.15.
+(\#eq:dew-point-temperature)
+\end{align}
+``` 
 
 dew point water on glass kim wilde

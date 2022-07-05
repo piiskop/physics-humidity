@@ -113,4 +113,14 @@ T_dp_r <- GetTKelvinFromTCelsius(t_dp_r)
 Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_Pasco`}{\kelvin}$. Selle kaudu arvutatud õhuniiskus oli  `r RH`.
 
 Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.
+```{r}
+c_p_d <- c(1.007e3, 1.007e3, 1.007e3)
+delta_vap_h <- c(2444e3, 2441.7e3, 2439.3e3)
+c_p_sat_steam <- c(1.9118e3, 1.9118e3, 1.9118e3)
+c_p_sat_liquid_h2o <- c(2546.5e3, 2546.5e3, 2546.5e3)
+W <- calculate_W(T_d, T_w, c_p_d, delta_vap_h, c_p_sat_steam, c_p_sat_liquid_h2o)
+T_dp <- calculate_Tdp(W)
+print(T_dp)
+```
+
 6-1 vesi6-17 õhu cp
