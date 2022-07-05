@@ -434,6 +434,32 @@ ja vastavalt  [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_E
 
 $$\mathrm{28.966 \times \frac{\cancel{g}}{mol} \times \frac{10^{-3} \times kg}{1 \times \cancel{g}} = 2.8966 \times 10^{-2} \times \frac{kg}{mol}}.$$
 
+```{r label = "specific-r"}
+R_d <- R / M_air
+R_w <- R / M_H2O
+```
+
+Gaasi erikonstant:
+
+```{=tex}
+\begin{align}
+r := \frac{R}{M}
+(\#eq:specific-gas-constant)
+\end{align}
+```
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 7]. Dimensioonanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\frac{\mathrm{\frac{L^2 \cdot \cancel{M}}{T^2}}}{\mathrm{\cancel{N}} \cdot \Theta}}{\mathrm{\frac{\cancel{M}}{\cancel{N}}}} = \frac{\mathrm{L^2}}{\mathrm{T^2} \cdot \Theta},
+(\#eq:dimensional-analysis-for-specific-gas-constant)
+\end{align}
+```
+
+mille põhjal on ühik $\unit{\meter\squared\per\second\squared\per\kelvin}$ või lühemalt $\unit{\joule\per\kilogram\per\kelvin}$.
+
+Kuiva õhu gaasikonstant on $\qty{`r R_d`}{\joule\per\kilogram\per\kelvin}$ ($\qty{287.042}{\joule\per\kilogram\per\kelvin}$) ja veeauru gaasikonstant on $\qty{`r R_w`}{\joule\per\kilogram\per\kelvin}$.
+
 ## Massikontsentratsioon (massi tihedus)
 
 
@@ -583,118 +609,8 @@ kuivkolvi temperatuur
 märgkolbi temperatuur
 : dünaamiline tasakaalutemperatuur, mille veepind saavutab adiabaatilistes tingimustes õhuga kokkupuutel[@a2018_determination]
 
-Absoluutne niiskus ehk rõhk kastepunktis:
-```{r label = "rules-b"}
-B <- .5 / 755
-```
-
-```{=tex}
-\begin{align}
-p_\text{dp} := p_\text{w} - (T_\text{d} - T_\text{w}) \cdot p \cdot B,
-(\#eq:absolute-humidity)
-\end{align}
-```
-
-milles *dp* tähendab kastepunkti, *w* märga ja *d* kuiva ning $B := `r B` \times \unit{\\per\\kelvin}$ [@Whipple_1933]. See absoluutse niiskuse arvutamise valem kehtib vedela vee kohta.
-
-suhteline niiskus
-: õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
-temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
-
-Suhtelise niiskuse valem:
-
-```{=tex}
-\begin{align}
-RH := \frac{p_\text{dp}}{p_\text{d}}
-(\#eq:relative-humidity)
-\end{align}
-```
-
-[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15].
-
-Dimensionaalanalüüs:
-
-```{=tex}
-\begin{align}
-\mathrm{\frac{\frac{M}{L^3}}{\frac{M}{L^3}}} = 1.
-(\#eq:dimensional-analysis-for-relative-humidity)
-\end{align}
-```
-
-Tabelis \@ref(tab:rh) on esitatud väljaarvutatud suhteline niiskus valitud temperatuuride korral, mida saab võrrelda [@haynes_2014_crc, p. 15-32] tabeliga.
-
-```{r label = "rh"}
-calculate_RH <- function(p_dp, p_d_H2O) {
-  return(p_dp / p_d_H2O)
-}
-
-calculate_p_dp <- function(p_w_H2O, T_d, T_w) {
-  return(p_w_H2O - (T_d - T_w) * p_at / 1510)
-}
-
-t_d <- c(seq(10, 24, 1), seq(24.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
-T_d <- GetTKelvinFromTCelsius(t_d)
-delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
-
-calculate_RH_from_delta_T <- function(T_d, delta_T) {
-  RH <- c()
-  
-  for (index in 1:length(T_d)) {
-    T_w <- T_d[index] - delta_T
-    
-    if (T_w < 273.15) {
-      RH <- c(RH, "")
-    } else {
-      p_w_H2O <- calculate_p_H2O(T_w)
-      p_dp <- calculate_p_dp(p_w_H2O, T_d[index], T_w)
-      p_d_H2O <- calculate_p_H2O(T_d[index])
-
-      if (p_dp < 0) {
-        RH <- c(RH, "")
-      } else {
-        
-        RH <- c(RH, p_dp / p_d_H2O)
-      }
-      
-    }
-    
-  }
-
-  return(RH)
-}
-
-RH_T <- data.frame(T_d)
-librarian::shelf("dplyr")
-
-for (index in delta_T) {
-  RH <- calculate_RH_from_delta_T(T_d = T_d, delta_T = index)
-  RH_numeric <- as.numeric(RH)
-  RH_T <- cbind(RH_T, ifelse(is.na(RH_numeric), "", round(RH_numeric * 100, digits = 1)))
-}
-
-colnames(RH_T) <- c(
-  "$\\frac{T}{\\unit{\\kelvin}}$",
-  delta_T
-)
-
-header_text <- c("Kuiva termomeetri näit", paste("Kuiva ja märja termomeetri näitude vahe $\\\\frac{\\\\Delta(T)}{\\\\unit{\\\\kelvin}}$"))
-header_span <- c(1, 19)
-header <- data.frame(header_text, header_span)
-
-print_table(
-  RH_T,
-  caption = "Psühhomeetri tabel: sisuosas on esitatud suhteline õhuniiskus protsentides.",
-  digits = 5,
-  additional_header = header
-) %>%
-  column_spec(1, width = "6em") %>%
-  landscape()
-
-```
-
 niiskuse suhe
-: proovis oleva veeauru massi ja kuiva õhu massi suhe
-
+: proovis oleva veeauru massi ja kuiva õhu massi suhe [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]
 
 ```{r label = "W"}
 M_w_TO_M_d <- M_H2O / M_air
@@ -787,12 +703,11 @@ calculate_Tdp <- function(W) {
 
 ```
 
-
-Kasutan niiskuse suhte valemis molaarmassi valemit \@ref(eq:molar-mass) ja edasi ideaalse rõhu gaasi valemit \@ref(eq:pressure-of-ideal-gas):
+Absoluutne niiskuse suhe näitab, kui palju veeauru õhk teatud temperatuuril suudab mahutada. Kasutan absoluutse niiskuse suhte valemis molaarmassi valemit \@ref(eq:molar-mass) ja edasi ideaalse rõhu gaasi valemit \@ref(eq:pressure-of-ideal-gas):
 
 ```{=tex}
 \begin{align}
-W := \frac{m(\ce{H_2O})}{m(\text{air})} =\frac{m_w}{m_d} = \frac{M_w \cdot n_w}{M_d \cdot n_d} = \frac{M_w \cdot p_w \cdot \cancel{V} \cdot \cancel{R} \cdot \cancel{T}}{\cancel{R} \cdot \cancel{T} \cdot M_d \cdot p_d \cdot \cancel{V}} = \frac{M_w \cdot p_w}{M_d \cdot p_d} = \frac{`r M_w_TO_M_d` \times p_w}{p - p_w}.
+W := \cfrac{m_w}{m_d} = \cfrac{M_w \cdot n_w}{M_d \cdot n_d} = \cfrac{M_w \cdot p_w \cdot \cancel{V} \cdot \cancel{R} \cdot \cancel{T}}{\cancel{R} \cdot \cancel{T} \cdot M_d \cdot p_d \cdot \cancel{V}} = \frac{M_w \cdot p_w}{M_d \cdot p_d} = \frac{`r M_w_TO_M_d` \times p_w}{p - p_w}.
 (\#eq:humidity-ratio)
 \end{align}
 ``` 
@@ -806,12 +721,213 @@ Dimensionaalanalüüs:
 \end{align}
 ``` 
 
+Avaldan veeauru osarõhu niiskuse suhte valemist:
+
+```{=tex}
+\begin{align}
+W \times p - W \times p_w &= `r M_w_TO_M_d` \times p_w\\
+W \times p_w + `r M_w_TO_M_d` \times p_w &= W \times p\\
+p_w :&= \frac{W \times p}{W + `r M_w_TO_M_d`}.
+(\#eq:partial-vapor-pressure-from-humidity-ratio)
+\end{align}
+``` 
+
+
+Absoluutne niiskus ehk rõhk kastepunktis:
+```{r label = "rules-b"}
+B <- .5 / 755
+```
+
+```{=tex}
+\begin{align}
+p_\text{dp} := p_\text{w} - (T_\text{d} - T_\text{w}) \cdot p \cdot B,
+(\#eq:absolute-humidity)
+\end{align}
+```
+
+milles *dp* tähendab kastepunkti, *w* märga ja *d* kuiva ning $B := `r B` \times \unit{\per\kelvin}$ [@Whipple_1933]. See absoluutse niiskuse arvutamise valem kehtib vedela vee kohta.
+
+suhteline niiskus
+: õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
+temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
+
+Suhteline niiskus näitab, kui palju veeauru õhk maksimaalsest võimalikust teatud temperatuuril mahutab. Suhtelise niiskuse valem, millesse asendan massi molaarmassi valemist \@ref(eq:molar-mass), ainehulga ideaalse gaasi valemist \@ref(eq:pressure-of-ideal-gas) ja veeauru osarõhu selle valemist niiskuse suhte kaudu \@ref(eq:partial-vapor-pressure-from-humidity-ratio):
+
+```{=tex}
+\begin{align}
+RH :&= \cfrac{m_w}{m_\text{sat}(w)} = \cfrac{M_w \cdot n_w}{M_\text{sat}(w) \cdot n_\text{sat}(w)} = \cfrac{M_w \cdot \frac{p_w \cdot \cancel{V}}{\cancel{R \cdot T}}}{M_\text{sat}(w) \cdot \cfrac{p_\text{sat}(w) \cdot \cancel{V}}{\cancel{R \cdot T}}} = \frac{p_w}{p_\text{sat}(w)}\\
+&= \frac{\frac{W \times p}{W + `r M_w_TO_M_d`}}{p_\text{sat}(w)} = \frac{W \times p}{(W + `r M_w_TO_M_d`) \cdot p_\text{sat}(w)}
+(\#eq:relative-humidity)
+\end{align}
+```
+
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14], [@relative].
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{\frac{M}{L^2 \cdot T^2}}{\frac{M}{L^2 \cdot T^2}}} = 1.
+(\#eq:dimensional-analysis-for-relative-humidity)
+\end{align}
+```
+
+
+Tabelis \@ref(tab:rh) on esitatud väljaarvutatud suhteline niiskus valitud temperatuuride korral, mida saab võrrelda [@haynes_2014_crc, p. 15-32] tabeliga.
+
+```{r label = "rh"}
+calculate_RH <- function(p_dp, p_d_H2O) {
+  return(p_dp / p_d_H2O)
+}
+
+calculate_p_dp <- function(p_w_H2O, T_d, T_w) {
+  return(p_w_H2O - (T_d - T_w) * p_at / 1510)
+}
+
+t_d <- c(seq(10, 24, 1), seq(24.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
+T_d <- GetTKelvinFromTCelsius(t_d)
+delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
+
+calculate_RH_from_delta_T <- function(T_d, delta_T) {
+  RH <- c()
+  
+  for (index in 1:length(T_d)) {
+    T_w <- T_d[index] - delta_T
+    
+    if (T_w < 273.15) {
+      RH <- c(RH, "")
+    } else {
+      p_w_H2O <- calculate_p_H2O(T_w)
+      p_dp <- calculate_p_dp(p_w_H2O, T_d[index], T_w)
+      p_d_H2O <- calculate_p_H2O(T_d[index])
+
+      if (p_dp < 0) {
+        RH <- c(RH, "")
+      } else {
+        
+        RH <- c(RH, p_dp / p_d_H2O)
+      }
+      
+    }
+    
+  }
+
+  return(RH)
+}
+
+RH_T <- data.frame(T_d)
+librarian::shelf("dplyr")
+
+for (index in delta_T) {
+  RH <- calculate_RH_from_delta_T(T_d = T_d, delta_T = index)
+  RH_numeric <- as.numeric(RH)
+  RH_T <- cbind(RH_T, ifelse(is.na(RH_numeric), "", round(RH_numeric * 100, digits = 1)))
+}
+
+colnames(RH_T) <- c(
+  "$\\frac{T}{\\unit{\\kelvin}}$",
+  delta_T
+)
+
+header_text <- c("Kuiva termomeetri näit", paste("Kuiva ja märja termomeetri näitude vahe $\\\\frac{\\\\Delta(T)}{\\\\unit{\\\\kelvin}}$"))
+header_span <- c(1, 19)
+header <- data.frame(header_text, header_span)
+
+print_table(
+  RH_T,
+  caption = "Psühhomeetri tabel: sisuosas on esitatud suhteline õhuniiskus protsentides.",
+  digits = 5,
+  additional_header = header
+) %>%
+  column_spec(1, width = "6em") %>%
+  landscape()
+
+```
+
+Avaldan suhtelise niiskuse valemist \@ref(eq:relative-humidity) veeauru osarõhu ja asendan selle niiskuse suhte valemisse \@ref(eq:humidity-ratio):
+
+```{=tex}
+\begin{align}
+W := \frac{`r M_w_TO_M_d` \times RH \times p_\text{sat}(w)}{p - RH \times p_\text{sat}(w)}.
+(\#eq:humidity-ratio-from-relative-humidity)
+\end{align}
+``` 
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{\frac{M}{T^2 \cdot L}}{\frac{M}{T^2 \cdot L}}} = 1.
+(\#eq:dimensional-analysis-for-humidity-ratio-from-relative-humidity)
+\end{align}
+``` 
+
+Joonisel \@ref(fig:adiabatic-saturation-wet-bulb-temperature) on näha soojusisoleeritud piisavalt pikk toru, milles toodetakse niisket õhku. Juurdevoolav vesi on justkui märgkolvi ümber olev vesi psühromeetris.
+
+
+(ref:adiabatic-saturation-wet-bulb-temperature) @adiabatic
+
+```{r label = "adiabatic-saturation-wet-bulb-temperature", fig.cap = "Vasakult siseneb kuiv õhk, mida niisutab alt voolav vesi. Tulemuseks on paremalt väljuv täielikult niiske õhk ((ref:adiabatic-saturation-wet-bulb-temperature)).", fig.margin = TRUE}
+include_svg("adiabatic-saturation-temperature-wet-bulb-temperature.png")
+```
+
+Summaarne entalpia, millesse asendan entalpiad erientalpiatega valemist \@ref(eq:specific-enthalpy):
+
+
+```{=tex}
+\begin{align}
+H :&= H_d + H_w = m_d \cdot h_d + m_w \cdot h_w.
+(\#eq:sum-of-enthalpy)
+\end{align}
+``` 
+
+Avaldan summaarse entalpia valemist \@ref(eq:sum-of-enthalpy) erientalpia vastava valemi \@ref(eq:specific-enthalpy) alusel, asendan veeauru ja kuiva õhu massi jagatise niiskuse suhtega vastavast valemist \@ref(eq:humidity-ratio):
+
+```{=tex}
+\begin{align}
+\frac{H}{m_d} &= h_d + \frac{m_w}{m_d} \cdot h_w
+h :&= h_d + W \cdot h_w.
+(\#eq:sum-of-specific-enthalpy)
+\end{align}
+``` 
+
+
+Massitasakaal, milles avaldan massi niiskuse suhte valemist \@ref(eq:humidity-ratio):
+
+
+```{=tex}
+\begin{align}
+m_\text{in}(w) + m_f &= m_\text{out}(w)
+W_\text{in} \cdot m_d + m_f &= W_\text{out} \cdot m_d
+m_f :&= m_d \cdot (W_\text{out} - W_\text{in})
+(\#eq:mass-of-floating-water)
+\end{align}
+``` 
+
+[@adiabatic].
+
+Energiatasakaal, millesse asendan erisoojuste ja temperatuurimuutude korrutise entalpiaga valemitest \@ref(eq:heat-capacity) ja \@ref(eq:specific-heat-capacity), voolava vee massi massitasakaalu valemist \@ref(eq:mass-of-floating-water), erientalpia summaarse erientalpiaga valemist \@ref(eq:sum-of-specific-enthalpy), kuiva õhu erientalpia vastavast valemist \@ref(eq:enthalpy):
+
+```{=tex}
+\begin{align}
+m_d \cdot c_p(in) \cdot \Delta(T) + m_f \cdot c_p(f) \cdot \Delta(T) &= m_d \cdot c_p(\text{sat}) \cdot \Delta(T)\\
+m_d \cdot h_\text{in} + m_f \cdot h_f &= m_d \cdot h_\text{sat}\\
+\cancel{m_d} \cdot h_\text{in} + \cancel{m_d} \cdot (W_\text{out} - W_\text{in}) \cdot h_f &= \cancel{m_d} \cdot h_\text{sat}\\
+h_d(\text{in}) + W_\text{in} \cdot h_w(\text{in}) + (W_\text{out} - W_\text{in}) \cdot h_f &= h_d(\text{sat}) + W_\text{sat} \cdot h_w(\text{sat})\\
+c_p(\text{in}) \cdot T_d + W_\text{in} \cdot h_w(\text{in}) + (W_\text{out} - W_\text{in}) \cdot h_f &= c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot h_w(\text{sat})
+(\#eq:energy-balance)
+\end{align}
+``` 
+
+Avaldan energia tasakaalu valemist \@ref(eq:energy-balance) niiskuse suhte:
+
 
 Niiske õhu erientalpia, millesse teen erientalpia asendused kasutades erientalpia üldvalemit \@ref(eq:enthalpy) ja erisoojuse valemit \@ref(eq:specific-enthalpy):
 
 ```{=tex}
 \begin{align}
-h := \frac{H}{m} = \frac{H_d + H_w}{m} = h_d + \frac{h_w \cdot m_w}{m_d} = h_d + W \cdot h_w = c_p(\text{dry air}) \cdot T3 + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
+h :&= \frac{H}{m} = \frac{H_d + H_w}{m} = h_d + \frac{h_w \cdot m_w}{m_d} = h_d + W \cdot h_w\\
+&= c_p(\text{dry air}) \cdot T3 + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
 (\#eq:enthalpy-of-moist-air)
 \end{align}
 ``` 
