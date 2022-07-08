@@ -123,4 +123,37 @@ T_dp <- calculate_Tdp(W)
 print(T_dp)
 ```
 
+
+```{r}
+t_d <- c(24, 24.6)
+library("psychrolib")
+SetUnitSystem("SI")
+T_d <- GetTKelvinFromTCelsius(t_d)
+t_w <- c(16.5, 15.2)
+T_w <- GetTKelvinFromTCelsius(t_w)
+GetTDewPointFromTWetBulb(t_d, t_w, 101325)
+```
+
+```{r}
+t_d <- 30
+t_w <- 20
+T_d <- GetTKelvinFromTCelsius(t_d)
+T_w <- GetTKelvinFromTCelsius(t_w)
+T_w
+RHS <- -5.8002206e3 * T_w^-1 + 1.3914993 * T_w^0 - 4.8640239e-2 * T_w^1 + 4.1764768e-5 * T_w^2 - 1.4452093e-8 * T_w^3 + 6.5459673 *   log(T_w)
+RHS
+p_ws <- exp(RHS)
+p_ws
+W_sat <- .6219495 * p_ws / (101325 - p_ws)
+W_sat
+W <- (1.006 * (T_w - T_d) + W_sat * (2501 - 2.381 * t_w)) / (2501 + 1.805 * t_d - 4.186 * t_w)
+W
+
+p_w <- 1.69#1908.004e-3
+alpha <- log(p_w)
+T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+T_dp
+```
+
+
 6-1 vesi6-17 õhu cp
