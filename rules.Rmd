@@ -266,8 +266,30 @@ c_p := \frac{C_p}{m}
 
 mille põhjal ühik on $\unit{\meter\squared\per\second\squared\per\kelvin}$ või lühemalt $\unit{\joule\per\kelvin\per\kilogram}$.
 
+## Moolfraktsioon
 
-## Molaarmass
+Moolfraktsioon võib olla ka rõhufraktsioon:
+
+```{=tex}
+\begin{align}
+x := \frac{n_\text{B}}{n}.
+(\#eq:mole-fraction)
+\end{align}
+```
+
+Dimensioonanalüüs:
+
+```{=tex}
+\begin{align}
+\mathrm{\frac{N}{N}} = 1.
+(\#eq:dimensional-analysis-for-mole-fraction)
+\end{align}
+```
+
+
+## Mass
+
+### Molaarmass
 
 molaarmass
 : aine ühe mooli mass [@haynes_2014_crc, p. 2-60]
@@ -472,24 +494,6 @@ ja vastavalt  [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_E
 
 $$\mathrm{28.966 \times \frac{\cancel{g}}{mol} \times \frac{10^{-3} \times kg}{1 \times \cancel{g}} = 2.8966 \times 10^{-2} \times \frac{kg}{mol}}.$$
 
-Moolifraktsioon võib olla ka rõhufraktsioon:
-
-```{=tex}
-\begin{align}
-x := \frac{n_\text{B}}{n}.
-(\#eq:mole-fraction)
-\end{align}
-```
-
-Dimensioonanalüüs:
-
-```{=tex}
-\begin{align}
-\mathrm{\frac{N}{N}} = 1.
-(\#eq:dimensional-analysis-for-mole-fraction)
-\end{align}
-```
-
 ```{r label = "specific-r"}
 R_d <- R / M_air
 R_w <- R / M_H2O
@@ -516,7 +520,28 @@ mille põhjal on ühik $\unit{\meter\squared\per\second\squared\per\kelvin}$ võ
 
 Kuiva õhu gaasikonstant on $\qty{`r R_d`}{\joule\per\kilogram\per\kelvin}$ ($\qty{287.042}{\joule\per\kilogram\per\kelvin}$) ja veeauru gaasikonstant on $\qty{`r R_w`}{\joule\per\kilogram\per\kelvin}$.
 
-## Massikontsentratsioon (massi tihedus)
+### Massi voolukiirus
+
+
+```{=tex}
+\begin{align}
+q_m := \frac{d(m)}{d(t)}
+(\#eq:mass-flow-rate)
+\end{align}
+```
+
+[@haynes_2014_crc, p. 2-11]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{M}{T},
+(\#eq:dimensional-analysis-for-mass-flow-rate)
+\end{align}
+```
+
+millest johtuvalt on ühik $\unit{\kilogram\per\second}$.
+
+### Massikontsentratsioon (massi tihedus)
 
 
 ```{=tex}
@@ -983,7 +1008,7 @@ Avaldan summaarse entalpia valemist \@ref(eq:sum-of-enthalpy) erientalpia vastav
 
 ```{=tex}
 \begin{align}
-\frac{H}{m_\text{d}} &= h_\text{d} + \frac{m_\text{w}}{m_\text{d}} \cdot h_\text{w}
+\frac{H}{m_\text{d}} &= h_\text{d} + \frac{m_\text{w}}{m_\text{d}} \cdot h_\text{w}\\
 h :&= h_\text{d} + W \cdot h_\text{w}.
 (\#eq:sum-of-specific-enthalpy)
 \end{align}
@@ -996,8 +1021,8 @@ Massitasakaal, milles avaldan massi niiskuse suhte valemist \@ref(eq:humidity-ra
 ```{=tex}
 \begin{align}
 m_\text{in}(\text{w}) + m_f &= m_\text{out}(\text{w})\\
-W_\text{in} \cdot m_d + m_f &= W_\text{out} \cdot m_d\\
-m_f :&= m_d \cdot (W_\text{out} - W_\text{in})
+W_\text{in} \cdot m_\text{d} + m_f &= W_\text{out} \cdot m_\text{d}\\
+m_\text{f} :&= m_\text{d} \cdot (W_\text{out} - W_\text{in})
 (\#eq:mass-of-floating-water)
 \end{align}
 ``` 
@@ -1008,21 +1033,25 @@ Energiatasakaal, millesse asendan erisoojuste ja temperatuurimuutude korrutise e
 
 ```{=tex}
 \begin{align}
-m_d \cdot c_p(\text{in}) \cdot \Delta(T) + m_f \cdot c_p(f) \cdot \Delta(T) &= m_d \cdot c_p(\text{sat}) \cdot \Delta(T)\\
-m_d \cdot h_\text{in} + m_f \cdot h_f &= m_d \cdot h_\text{sat}\\
-\cancel{m_d} \cdot h_\text{in} + \cancel{m_d} \cdot (W_\text{sat} - W) \cdot h_f &= \cancel{m_d} \cdot h_\text{sat}\\
+m_\text{d} \cdot c_p(\text{in}) \cdot \Delta(T) + m_f \cdot c_p(\text{f}) \cdot \Delta(T) &= m_\text{d} \cdot c_p(\text{sat}) \cdot \Delta(T)\\
+m_\text{d} \cdot h_\text{in} + m_f \cdot h_\text{f} &= m_d \cdot h_\text{sat}\\
+\cancel{m_\text{d}} \cdot h_\text{in} + \cancel{m_\text{d}} \cdot (W_\text{sat} - W) \cdot h_f &= \cancel{m_d} \cdot h_\text{sat}\\
 h_d(\text{in}) + W \cdot h_w(\text{in}) + (W_\text{sat} - W) \cdot h_f &= h_d(\text{sat}) + W_\text{sat} \cdot h_w(\text{sat})\\
-c_p(\text{in}) \cdot T_d + W \cdot h_w(\text{in}) + (W_\text{sat} - W) \cdot h_f &= c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot h_w(\text{sat}).
+c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) + W \cdot h_w(\text{in}) + (W_\text{sat} - W) \cdot h_f &= c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot h_w(\text{sat}).
 (\#eq:energy-balance)
 \end{align}
 ``` 
+
+Juhin erilist tähelepanu valemile \@ref(eq:sum-of-specific-enthalpy) ja selles temperatuuride muutudele. Ainel pole sellist omadust nagu entalpia, sest entalpia tähendab soojushulga muutu vastavalt temperatuurimuudule. Sellised muudud on välja arvutatud eksperimentaalselt ja nendest on koostatud tabelid. Kui küsitav suurus on entalpia mingi temperatuuri korral, siis see ei tähenda füüsikaliselt, et sellel ainel on mingi fikseeritud entalpia selle temperatuuri korral. See tähendab hoopis, et selle ja temperatuuri $\qty{`r T_0`}{K}$ vahele vastab entalpia muut, mis on selle temperatuuri kohta märgitud entalpia ja nullentalpia vahe, kui nullentalpiale vastab nagu minu näites $\qty{`r T_0`}{K}$. Kuna nulli lahutamine tulemust ei muuda, siis seetõttu kasutatakse valemis vahel temperatuuride muudu asemel ainult lõpptemperatuuri, mille ühik on $\unit{\degreeCelsius}$. [@reference]
+
+Referentstemperatuur on $\qty{`r T_0`}{K}$ [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, pp. 8 to 10] esimese peatüki teises tabelis, milles on eraldi välja toodud kuiva õhu entalpia. Referentstemperatuur on hoopis muu [@haynes_2014_crc, p. 6-17] ja selle tabeli põhjal saab entalpia muudu kätte kahe temperatuuri entalpiate vahena või korrutades temperatuurimuudu algtemperatuuri soojusmahtuvuse väärtusega.
 
 Niiske õhu erientalpia, millesse teen erientalpia asendused kasutades erientalpia üldvalemit \@ref(eq:enthalpy) ja erisoojuse valemit \@ref(eq:specific-enthalpy):
 
 ```{=tex}
 \begin{align}
 h :&= \frac{H}{m} = \frac{H_d + H_w}{m} = h_d + \frac{h_w \cdot m_w}{m_d} = h_d + W \cdot h_w\\
-&= c_p(\text{dry air}) \cdot T + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T)
+&= c_p(\text{dry air}) \cdot (T - \qty{`r T_0`}{\kelvin} + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T - \qty{`r T_0`}{\kelvin}))
 (\#eq:enthalpy-of-moist-air)
 \end{align}
 ``` 
@@ -1038,29 +1067,50 @@ h :&= \frac{H}{m} = \frac{H_d + H_w}{m} = h_d + \frac{h_w \cdot m_w}{m_d} = h_d 
 
 mille põhjal ühik on $\unit{\frac{m^2}{s^2}}$ või lühemalt $\unit{\joule\per\kilogram}$.
 
-Avaldan energia tasakaalu valemist \@ref(eq:energy-balance) niiskuse suhte, millesse asendan aurustumissoojuse vastavast valemist \@ref(eq:enthalpy-of-vaporization) kasutades erientalpia valemit \@ref(eq:specific-enthalpy):
+Kirjutan energia tasakaalu valemi \@ref(eq:energy-balance) lahti:
 
 ```{=tex}
 \begin{align}
-c_p(\text{in}) \cdot T_d + W \cdot h_w(\text{in}) + W_\text{sat} \cdot h_f - W \cdot h_f &= c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot h_w(\text{sat})\\
-W \cdot h_w(\text{in}) - W \cdot h_f &= c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot h_w(\text{sat}) - c_p(\text{in}) \cdot T_d\\
+c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) + W \cdot h_w(\text{in}) + W_\text{sat} \cdot h_f - W \cdot h_f\\
+= c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot h_w(\text{sat}).
+(\#eq:energy-balance-expanded)
+\end{align}
+```
+
+Avaldan laiendatud energia tasakaalu valemist \@ref(eq:energy-balance-expanded) niiskuse suhte, millesse asendan aurustumissoojuse vastavast valemist \@ref(eq:enthalpy-of-vaporization) kasutades erientalpia valemit \@ref(eq:specific-enthalpy):
+
+
+```{=tex}
+\begin{align}
+W \cdot h_w(\text{in}) - W \cdot h_f &= c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot h_w(\text{sat}) - c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin})\\
 - W_\text{sat} \cdot h_f\\
-W :&= \frac{c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot (h_w(\text{sat}) - h_f) - c_p(\text{in}) \cdot T_d}{h_w(\text{in}) - h_f}\\
-W :&= \frac{c_p(\text{sat}) \cdot T_\text{sat} + W_\text{sat} \cdot \Delta_\text{vap}(h) - c_p(\text{in}) \cdot T_d}{h_w(\text{in}) - h_f}\\
-\underbrace{c_p(\text{sat}) \cdot T_\text{sat} - c_p(\text{in}) \cdot T_d}_{\text{mõistlik soojuskadu õhus}} &= \underbrace{W_\text{sat} \cdot \Delta_\text{vap}(h) - W \cdot (h_f - h_w(\text{in}))}_{\text{aurustumine}}
+W :&= \frac{c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot (h_w(\text{sat}) - h_f) - c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin})}{h_w(\text{in}) - h_f}\\
+W :&= \frac{c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot \Delta_\text{vap}(h) - c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin})}{h_w(\text{in}) - h_f}.
 (\#eq:humidity-ratio-from-energy-balance)
+\end{align}
+```
+
+Selgitan niiskuse suhte valemi \@ref(eq:humidity-ratio-from-energy-balance) osi:
+
+```{=tex}
+\begin{align}
+\underbrace{c_p(\text{sat}) \cdot (T_\text{sat} - \qty{`r T_0`}{\kelvin}) - c_p(\text{in}) \cdot (T_d - \qty{`r T_0`}{\kelvin})}_{\text{mõistlik soojuskadu õhus}} &= \underbrace{W_\text{sat} \cdot \Delta_\text{vap}(h) - W \cdot (h_f - h_w(\text{in}))}_{\text{aurustumine}}
+(\#eq:humidity-ratio-from-energy-balance-explained)
 \end{align}
 ``` 
 
 [@difference].
+
+Olin tükk aega kimpus, millist soojusmahtuvuse väärtust kasutada, kui see sõltub temperatuurist.
 
 Adiabaatilises protsessis küllastusentalpia:
 
 ```{=tex}
 \begin{align}
 h_\text{sat} :&= h + (W_\text{sat} - W) \cdot h_w = h_d + W \cdot h_g + (W_\text{sat} - W) \cdot h_w\\
-&= c_p(\text{dry air}) \cdot T_d + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d) + (W_\text{sat} - W) \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
-&= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)
+&= c_p(\text{dry air}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) &+ W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_d - \qty{`r T_0`}{\kelvin})\\
+&&+ (W_\text{sat} - W) \cdot c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})\\
+&= c_p(\text{dry air}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_w - \qty{`r T_0`}{\kelvin})
 (\#eq:enthalpy-of-saturated-air)
 \end{align}
 ``` 
@@ -1070,15 +1120,15 @@ Avaldan küllastusentalpia valemist \@ref(eq:enthalpy-of-saturated-air) niiskuse
 
 ```{=tex}
 \begin{align}
-c_p(\text{dry air}) \cdot T_d + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d)\\
-+ W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot T_w - W \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
-= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)\\
-W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w) \\
-= c_p(\text{dry air}) \cdot T_w + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w)\\
-- c_p(\text{dry air}) \cdot T_d - W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot T_w\\
-= c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w - c_p(\text{sat, liquid water}) \cdot T_w)\\
-W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_w - c_p(\text{sat, liquid water}) \cdot T_w)}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w}\\
-W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + (c_p(\text{sat, steam}) - c_p(\text{sat, liquid water})) \cdot T_w)}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot T_d - c_p(\text{sat, liquid water}) \cdot T_w}
+c_p(\text{dry air}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) + W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_d - \qty{`r T_0`}{\kelvin}))\\
++ W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) - W \cdot c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})\\
+= c_p(\text{dry air}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_w - \qty{`r T_0`}{\kelvin}))\\
+W \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})) \\
+= c_p(\text{dry air}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_w - \qty{`r T_0`}{\kelvin}))\\
+- c_p(\text{dry air}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) - W_\text{sat} \cdot c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})\\
+= c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin}))\\
+W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_w - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})}\\
+W := \frac{c_p(\text{dry air}) \cdot (T_w - T_d) + W_\text{sat} \cdot (\Delta_\text{vap}(h) + (c_p(\text{sat, steam}) - c_p(\text{sat, liquid water})) \cdot (T_w - \qty{`r T_0`}{\kelvin}))}{\Delta_\text{vap}(h) + c_p(\text{sat, steam}) \cdot (T_d - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, liquid water}) \cdot (T_w - \qty{`r T_0`}{\kelvin})}
 (\#eq:humidity-ratio-using-enthalpies)
 \end{align}
 ``` 
