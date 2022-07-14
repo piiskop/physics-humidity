@@ -114,11 +114,7 @@ Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeC
 
 Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.
 ```{r}
-c_p_d <- c(1.007e3, 1.007e3, 1.007e3)
-delta_vap_h <- c(2444e3, 2441.7e3, 2439.3e3)
-c_p_sat_steam <- c(1.9118e3, 1.9118e3, 1.9118e3)
-c_p_sat_liquid_h2o <- c(2546.5e3, 2546.5e3, 2546.5e3)
-W <- calculate_W(T_d, T_w, c_p_d, delta_vap_h, c_p_sat_steam, c_p_sat_liquid_h2o)
+W <- calculate_W(T_d, T_w)
 T_dp <- calculate_Tdp(W)
 print(T_dp)
 ```
