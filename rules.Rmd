@@ -61,7 +61,7 @@ p_at <- 101.325e3
 standardseisund
 : määratletud olek (määratud temperatuur, rõhk, kontsentratsioon jne) termodünaamiliste funktsioonide tabeleerimiseks ja termodünaamiliste arvutuste tegemiseks [@haynes_2014_crc, p. 2-65]
 
-Standardseisundi rõhk on `r p` $\unit{\pascal}$ [@haynes_2014_crc, p. 1-7]. Standardne atmosfäär on `r p_at` $\unit{\pascal}$.
+Standardseisundi rõhk on `r p` $\unit{\pascal}$ [@haynes_2014_crc, p. 1-7]. Standardne atmosfäärirõhk on `r p_at` $\unit{\pascal}$ [@haynes_2014_crc, p. 6-12].
 
 Ideaalse gaasi rõhk:
 ```{r label = "r"}
@@ -89,33 +89,29 @@ milles *n* on ainehulk, *R* on universaalne gaasikonstant $`r R` \times \unit{\j
 ```
 
 mistõttu ühik on $\unit{\kilogram\per\meter\per\second\squared}$ ehk lühemalt $\unit{\pascal}$.
+```{r label = "p-sat-of-liquid-h2o"}
 
-Avaldan ideaalse gaasi rõhu valemist \@ref(eq:pressure-of-ideal-gas) ainehulga:
+calculate_p_H2O <- function(T) {
+  
+  for (index in 1:length(T)) {
+  
+    if (T[index] < 273.15 | T[index] > 473.15) {
+      stop(paste("The absolute temperature must be between 273.15 and 473.15 K inclusive. The current absolute temperature at the position", index, "is", T[index], "K."))
+    }
+    
+  }
+  
+  return(exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
+}
 
-```{=tex}
-\begin{align}
-n := \frac{p \cdot V}{R \cdot T}
-(\#eq:amount-of-ideal-gas)
-\end{align}
 ```
-
-[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]. Dimensionaalanalüüs:
-
-```{=tex}
-\begin{align}
-\frac{\mathrm{\frac{M}{L \cdot T^2} \cdot L^3}}{\frac{\mathrm{M \cdot L^2}}{\mathrm{T^2 \cdot N} \cdot \Theta} \cdot \Theta} = \mathrm{\frac{\cancel{M} \cdot \cancel{L^2} \cdot \cancel{T^2} \cdot N}{\cancel{T^2} \cdot \cancel{M} \cdot \cancel{L^2}} = N},
-(\#eq:dimensional-analysis-for-amount-of-ideal-gas)
-\end{align}
-```
-
-mis tähendab, et ühik on $\unit{\mole}$.
 
 Küllastusrõhk vedela vee kohal temperatuurivahemikus $\qty{`r T_0`}{\kelvin}$ kuni $\qty{`r T_1`}{\kelvin}$ on antud valemiga
 
 ```{=tex}
 
 \begin{align}
-& p_{ws} && := e^{\sum_{i := 8}^{n}{C_i \times T^{i - 9}} + 6.5459673 \times \mathrm{ln}(T)}\\
+& p_\text{ws} && := e^{\sum_{i := 8}^{n}{C_i \times T^{i - 9}} + 6.5459673 \times \mathrm{ln}(T)}\\
 &&&= e^{\sum_{i := 8}^n{C_i \times (t + 273.15)^{i - 9}} + 6.5459673 \times \mathrm{ln}(t + 273.15)}\text{, kus}\\
 & C_8 && := -5.8002206 \times 10^3,\\
 & C_9 && := 1.3914993,\\
@@ -266,7 +262,27 @@ c_p := \frac{C_p}{m}
 
 mille põhjal ühik on $\unit{\meter\squared\per\second\squared\per\kelvin}$ või lühemalt $\unit{\joule\per\kelvin\per\kilogram}$.
 
-## Moolfraktsioon
+## Mool
+
+Avaldan ideaalse gaasi rõhu valemist \@ref(eq:pressure-of-ideal-gas) ainehulga:
+
+```{=tex}
+\begin{align}
+n := \frac{p \cdot V}{R \cdot T}
+(\#eq:amount-of-ideal-gas)
+\end{align}
+```
+
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\mathrm{\frac{M}{L \cdot T^2} \cdot L^3}}{\frac{\mathrm{M \cdot L^2}}{\mathrm{T^2 \cdot N} \cdot \Theta} \cdot \Theta} = \mathrm{\frac{\cancel{M} \cdot \cancel{L^2} \cdot \cancel{T^2} \cdot N}{\cancel{T^2} \cdot \cancel{M} \cdot \cancel{L^2}} = N},
+(\#eq:dimensional-analysis-for-amount-of-ideal-gas)
+\end{align}
+```
+
+mis tähendab, et ühik on $\unit{\mole}$.
 
 Moolfraktsioon võib olla ka rõhufraktsioon:
 
@@ -494,12 +510,12 @@ ja vastavalt  [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_E
 
 $$\mathrm{28.966 \times \frac{\cancel{g}}{mol} \times \frac{10^{-3} \times kg}{1 \times \cancel{g}} = 2.8966 \times 10^{-2} \times \frac{kg}{mol}}.$$
 
+Gaasi erikonstant:
+
 ```{r label = "specific-r"}
 R_d <- R / M_air
 R_w <- R / M_H2O
 ```
-
-Gaasi erikonstant:
 
 ```{=tex}
 \begin{align}
@@ -519,6 +535,48 @@ r := \frac{R}{M}
 mille põhjal on ühik $\unit{\meter\squared\per\second\squared\per\kelvin}$ või lühemalt $\unit{\joule\per\kilogram\per\kelvin}$.
 
 Kuiva õhu gaasikonstant on $\qty{`r R_d`}{\joule\per\kilogram\per\kelvin}$ ($\qty{287.042}{\joule\per\kilogram\per\kelvin}$) ja veeauru gaasikonstant on $\qty{`r R_w`}{\joule\per\kilogram\per\kelvin}$.
+
+Veeauru ja kuiva õhu molaarmasside suhe:
+```{r label = "ratio-M"}
+M_w_TO_M_d <- M_H2O / M_air
+
+```
+
+```{=tex}
+\begin{align}
+\epsilon := \frac{M(\ce{H_2O})}{M_\text{d}} = \frac{`r M_H2O` \times \unit{\kilogram\per\mole}}{`r M_air` \times \unit{\kilogram\per\mole}} = `r M_w_TO_M_d`,
+(\#eq:ratio-molecular-weight-of-water-vapour-to-dry-air)
+\end{align}
+```
+
+milles *d* tähendab kuiva õhku [@inbook, p. 33].
+
+Psühhomeetriline konstant on konstant ainult püsiva rõhu korral, mis tähendab, et tegelikult ei ole konstant, vaid lihtsalt tegur:
+```{r label = "psychrometric-coefficient"}
+c_p_d <- 1.006e3
+delta_vap_h <- 2500.9e3
+EPSILON_WITHOUT_P <- c_p_d / (M_w_TO_M_d * delta_vap_h)
+
+```
+
+
+```{=tex}
+\begin{align}
+\gamma := \frac{c_p \times P}{\epsilon \times \lambda} = \frac{`r c_p_d` \times \unit{\joule\per\kilogram\per\kelvin} \times P}{`r M_w_TO_M_d` \times `r delta_vap_h` \times \unit{\joule\per\kilogram}} = `r EPSILON_WITHOUT_P` \times \unit{\per\kelvin} \times P,
+(\#eq:psychrometric-coefficient)
+\end{align}
+```
+
+milles $c_p$ on õhu erisoojus, $\lambda$ on vee aurustumissoojus [@haynes_2014_crc, pp. 1-25, 6-5, 6-17], [@Goodfellow2001-ce, p. 1470], [@inbook, pp. 32 to 33]. Kuigi [@inbook, p. 33] kasutatakse nii õhu erisoojust kui vee aurustumissoojust mingite muude temperatuuride kui standardtemperatuuri korral, mina kasutan neid standardtemperatuuri korral, et oleks ühtne süsteem. Sellest johtuvalt on minu psühhomeetriline tegur [@inbook] omast erinev. Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\mathrm{M}}{\mathrm{L \cdot T^2} \cdot \Theta},
+(\#eq:dimensional-analysis-for-psychrometric-coefficient)
+\end{align}
+```
+
+millest johtuvalt on ühik $\unit{\kilogram\per\meter\per\second\squared\per\kelvin}$ ehk lühemalt $\unit{\pascal\per\kelvin}$.
 
 ### Massi voolukiirus
 
@@ -609,19 +667,6 @@ Lasen koostada tabeli \@ref(tab:density-of-saturated-h2o) küllastava veeauru ti
 t <- c(seq(0, 14, 2), seq(15, 27.9, .1), seq(28, 200, 4))
 T <- GetTKelvinFromTCelsius(t)
 
-calculate_p_H2O <- function(T) {
-  
-  for (index in 1:length(T)) {
-  
-    if (T[index] < 273.15 | T[index] > 473.15) {
-      stop(paste("The absolute temperature must be between 273.15 and 473.15 K inclusive. The current absolute temperature at the position", index, "is", T[index], "K."))
-    }
-    
-  }
-  
-  return(exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
-}
-
 p_H2O <- calculate_p_H2O(T)
 
 calculate_gamma_H2O <- function(p_H2O, T) {
@@ -703,7 +748,6 @@ niiskuse suhe
 : proovis oleva veeauru massi ja kuiva õhu massi suhe [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]
 
 ```{r label = "W"}
-M_w_TO_M_d <- M_H2O / M_air
 #' Return humidity ratio of saturated air given dry-bulb temperature.
 #'
 #' @param T_d A numeric vector of dry-bulb temperature in [SI]
@@ -719,13 +763,17 @@ M_w_TO_M_d <- M_H2O / M_air
 #' @export
 calculate_W_saturated <- function(T_d) {
   
-    if (any(T_d) < 0) {
-      stop(paste("The absolute temperature can't be negative. The current absolute temperature is", T_d, "K."))
+  for (index in length(T_d)) {
+    
+    if (T_d[index] < 0) {
+      stop(paste("The absolute temperature can't be negative. The current absolute temperature is", T_d[index], "K at the position", index, "."))
     }
 
-    p_H2O_saturated <- calculate_p_H2O(T_d)
-    W_saturated <- M_w_TO_M_d * p_H2O_saturated / (p_at - p_H2O_saturated)
-    return(W_saturated)
+  }  
+
+  p_H2O_saturated <- calculate_p_H2O(T_d)
+  W_saturated <- M_w_TO_M_d * p_H2O_saturated / (p_at - p_H2O_saturated)
+  return(W_saturated)
 }
 
 ```
@@ -1024,8 +1072,6 @@ h_\text{sat} :&= h + (W_\text{sat} - W) \cdot h_\text{w} = h_\text{d} + W \cdot 
 ``` 
 [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15], [@numerically].
 ```{r label = "c_p"}
-c_p_d <- 1.006e3
-delta_vap_h <- 2500.9e3
 c_p_sat_w <- 1.8844e3
 c_p_sat_l <- 4.2199e3
 c_p_sat <- c_p_sat_w - c_p_sat_l
@@ -1048,17 +1094,19 @@ c_p_sat <- c_p_sat_w - c_p_sat_l
 #' @export
 calculate_W <- function(T_d, T_w) {
 
-  if (any(T_w > T_d)) {
-      stop(paste("Wet bulb temperature is above dry bulb temperature. The current wet bulb temperature is", T_w, "K and the current dry bulb temperature is", T_d, "K."))
+  for (index in length(T_d)) {
+    
+    if (T_w[index] > T_d[index]) {
+      stop(paste("Wet bulb temperature is above dry bulb temperature. The current wet bulb temperature is", T_w[index], "K and the current dry bulb temperature is", T_d[index], "K at the position", index, "."))
+    }
+    
   }
 
   t_d <- GetTCelsiusFromTKelvin(T_d)
   t_w <- GetTCelsiusFromTKelvin(T_w)
   
   Wsstar <- calculate_W_saturated(T_w)
-
   W <- (Wsstar * (delta_vap_h - c_p_sat * t_w) - c_p_d * (t_d - t_w)) / (delta_vap_h + c_p_sat_w * t_d - c_p_sat_l * t_w)
-
   return(W)
 }
 
@@ -1069,18 +1117,12 @@ calculate_W <- function(T_d, T_w) {
 #'
 #' @return A numeric vector of partial pressure of water vapor in moist air in Pa [SI]
 #'
-#' @references
-#' ASHRAE Handbook - Fundamentals (2017) ch. 1 eqn 20 solved for pw
-#'
-#' @examples
-#' calculate_P_from_W(seq(0.02, 0.03, 0.001), 95461)
-#'
 #' @export
 calculate_P_from_W <- function(W) {
     return(p_at * W / (M_w_TO_M_d + W))
 }
 
-#' This function calculates the dew point temperature.
+#' This function calculates the dew point temperature between 273.15 K and 366.15 K.
 #'
 #' @param W the humidity ratio
 #' 
@@ -1088,7 +1130,7 @@ calculate_P_from_W <- function(W) {
 #' 
 #' @export
 calculate_Tdp <- function(W) {
-  p_w <- calculate_P_from_W(W)
+  p_w <- calculate_P_from_W(W) / 1e3
   alpha <- log(p_w)
   T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984 + T_0
   return(T_dp)
@@ -1179,8 +1221,8 @@ Kastepunkti valem kehtib vahemikus $\qty{`r T_0`}{\kelvin}$ kuni $\qty{`r T_1`}{
 
 ```{=tex}
 \begin{align}
-T_\text{dp} :&= (6.54 + 14.526 \times ln(\frac{p_\text{w}}{\unit{\pascal}}) + .7389 \times (ln(\frac{p_\text{w}}{\unit{\pascal}}))^2 + .09486 \times (ln(\frac{p_\text{w}}{\unit{\pascal}}))^3\\
-&+ .4569 \times p_\text{w}^{.1984} + 273.15) \cdot \unit{\kelvin}
+T_\text{dp} :&= (6.54 + 14.526 \times ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}) + .7389 \times (ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^2 + .09486 \times (ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^3\\
+&+ .4569 \times \frac{p_\text{w}}{10^3 \times \unit{\pascal}}^{.1984} + 273.15) \times \unit{\kelvin}
 (\#eq:dew-point-temperature)
 \end{align}
 ``` 

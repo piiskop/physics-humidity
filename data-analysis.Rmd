@@ -75,12 +75,13 @@ librarian::shelf("psychrolib")
 # psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
 # print(psychometrics)
 # GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
-GetDryAirVolume(t, p_at)
+# print(t)
+# GetDryAirVolume(t, p_at)
 # GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
 # GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
-GetSatVapPres(t)
-GetStandardAtmPressure(10)
-GetStationPressure(p_at, 10, t)
+# GetSatVapPres(t)
+# GetStandardAtmPressure(10)
+# GetStationPressure(p_at, 10, t)
 # GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
 # GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
 # > 1/69.006*1000-.64*(24-16.5)
@@ -89,8 +90,6 @@ GetStationPressure(p_at, 10, t)
 # [1] 0.4444809
 # > .5/755*1013.25
 # [1] 0.6710265
-librarian::shelf("MeTo")
-psyc_cons(elev = 2, P = 101.3)
 # > -5.8002206e3/(24+273.15) + 1.3914993e0 - 4.8640239e-2*(24+273.15) + 4.1764768e-5*(24+273.15)^2 - 1.4452093e-8*(24+273.15)^3 + 6.5459673e0*log((24+273.15))
 # [1] 8.001398
 # > exp(1)^8.001398
@@ -113,12 +112,67 @@ T_dp_r <- GetTKelvinFromTCelsius(t_dp_r)
 Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_Pasco`}{\kelvin}$. Selle kaudu arvutatud õhuniiskus oli  `r RH`.
 
 Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.
-```{r}
+```{r label = "own-calculations"}
 W <- calculate_W(T_d, T_w)
 T_dp <- calculate_Tdp(W)
-print(T_dp)
 ```
 
+Augusti psühhomeetriga mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[1]`}{\kelvin}$. Tabeli järgi 
+
+Assmanni psühhomeetriga mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[2]`}{\kelvin}$.
+
+Teen nüüd kogu andmeanalüüsi juhendi järgi kasutades ainult psühromeetreid kandes tulemused tabelisse \@ref(tab:manual).
+
+```{r label = "manual"}
+device <- c("Augusti", "Assmanni")
+t_manual <- c(24, 24.6)
+t_1_manual <- c(16.5, 15.2)
+t_dp_MANUAL <- c(9, 6 + (7.8 - 7.4) * (7 - 6))
+A_1_manual <- c(mean(13.6, 14.5), 12.8 + (16 - 15.2) * (13.6 - 12.8))
+a_manual <- A_1_manual - .64 * (t_manual - t_1_manual)
+A_manual <- c(22.2, 24.6 + (25 - 24.6) * (23.5 - 22.2))
+R_manual <- a_manual / A_manual * 100
+data_frame_manual <- data.frame(device, t_manual, t_1_manual, t_dp_MANUAL, A_1_manual, a_manual, A_manual, R_manual)
+
+colnames(data_frame_manual) <- c(
+  "Psühhomeeter",
+  "$\\frac{t}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{t_1}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{t_\\text{dp}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{A_1}{\\unit{\\gram\\per\\cubic\\meter}}$",
+  "$\\frac{a}{\\unit{\\gram\\per\\cubic\\meter}}$",
+  "$\\frac{A}{\\unit{\\gram\\per\\cubic\\meter}}$",
+  "$\\frac{R}{\\unit{\\percent}}$"
+)
+
+print_table(
+  data_frame_manual,
+  caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed vastavalt juhendile, milles $1$ tähendab märga keskkonda.",
+  digits = 3
+)
+
+```
+
+# juhendi valem
+# juhendi niiskuste tabel
+# psychrolib
+# chart
+# r ehk minu
+
+Viimaks koondan tabelisse \@ref(tab:comparison) absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
+
+```{r label = "comparison"}
+DEVICES_FOR_COMPARISON <- c("Augusti psühromeeter", "Assmanni psühromeeter", "Pasco ilmajaam")
+calculate_p_H2O
+
+# a_FOR_COMPARISON <- 
+```
+
+
+
+
+
+Tabelis on esitatud erinevused minu arvutuste
 
 ```{r}
 t_d <- c(24, 24.6)
@@ -128,11 +182,17 @@ T_d <- GetTKelvinFromTCelsius(t_d)
 t_w <- c(16.5, 15.2)
 T_w <- GetTKelvinFromTCelsius(t_w)
 GetTDewPointFromTWetBulb(t_d, t_w, 101325)
+1.013e-3/(.622 * 2.45)
+1.006/(.622 * 2500.9)
+.5/755
+.46/(1+(1-.46)*0.01174108/.622)
+#e_0_T_w <- .611 * exp(17.27 * T_w / T_w + 237.3)
+#(112 + .9 * T_w) * (e_a / e_0_T_w)^(1 / 8) - 112 + .1 * T_w
 ```
 
 ```{r}
-t_d <- 30
-t_w <- 20
+t_d <- 24#30
+t_w <- 16.5#20
 T_d <- GetTKelvinFromTCelsius(t_d)
 T_w <- GetTKelvinFromTCelsius(t_w)
 T_w
@@ -145,10 +205,17 @@ W_sat
 W <- (1.006 * (T_w - T_d) + W_sat * (2501 - 2.381 * t_w)) / (2501 + 1.805 * t_d - 4.186 * t_w)
 W
 
-p_w <- 1.69#1908.004e-3
-alpha <- log(p_w)
-T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+p_w <- 101325 * W / (0.621945 + W)
+p_w
+alpha <- log(p_w*1e-3)
+T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * (p_w*1e-3)^.1984+273.15
 T_dp
+```
+```{r}
+library("MeTo")
+psyc_cons(elev = 2, P = 101.325)
+psyc_cons(elev = 2)
+
 ```
 
 
