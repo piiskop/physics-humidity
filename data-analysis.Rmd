@@ -22,9 +22,10 @@ t_w <- c(16.5, 15.2, t_w_Pasco)
 T_w <- GetTKelvinFromTCelsius(t_w)
 p_w_H2O <- calculate_p_H2O(T_w)
 gamma_w <- calculate_gamma_H2O(p_w_H2O, T_w)
-p_dp <- calculate_p_dp(p_w_H2O, t_d, t_w)
+p_dp <- calculate_p_a(p_w_H2O, gamma_whipple, t_d, t_w)
 gamma_d <- calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
-a <- gamma_w * 1e3 - .64 * (t_d - t_w)
+a <- calculate_a(gamma_w, t_d, t_w)
+a[3] <- 7.6
 p_d_H2O <- calculate_p_H2O(T_d)
 RH <- calculate_RH(p_dp, p_d_H2O)
 RH_according_to_instructions <- a / (gamma_d * 1e3) * 100
@@ -153,23 +154,120 @@ print_table(
 
 ```
 
-# juhendi valem
-# juhendi niiskuste tabel
-# psychrolib
-# chart
-# r ehk minu
+<!-- # juhendi valem -->
+<!-- # juhendi niiskuste tabel -->
+<!-- # psychrolib -->
+<!-- # meto -->
+<!-- # chart -->
+<!-- # r ehk minu -->
 
-Viimaks koondan tabelisse \@ref(tab:comparison) absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
+(ref:inbook) @inbook, p. 37
+(ref:ashrae) @American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14
+(ref:whipple) @Whipple_1933, p. 315
 
-```{r label = "comparison"}
+Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
+
+```{r label = "comparison-of-pressure"}
 DEVICES_FOR_COMPARISON <- c("Augusti psühromeeter", "Assmanni psühromeeter", "Pasco ilmajaam")
+p_sat_FOR_COMPARISON <- calculate_p_H2O(T_d)
+p_sat_FOR_COMPARISON_OF_inbook <- calculate_p_sat_in_inbook(T_d)
+gamma_FOR_COMPARISON <- c(calculate_gamma(p_at, "natural ventilated"), calculate_gamma(p_at, "ventilated"), calculate_gamma(p_at, "non-ventilated"))
+p_sat_at_T_w_FOR_COMPARISON <- calculate_p_H2O(T_w)
+p_a_FOR_COMPARISON <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON, gamma_FOR_COMPARISON, T_d, T_w)
+p_a_FOR_COMPARISON_OF_inbook <- calculate_p_a(calculate_p_sat_in_inbook(T_w), gamma_FOR_COMPARISON, T_d, T_w)
+p_a_FOR_COMPARISON_OF_whipple <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON, calculate_gamma(p_at), T_d, T_w)
+RH_FOR_COMPARISON <- calculate_RH(p_a_FOR_COMPARISON, p_sat_FOR_COMPARISON)
+RH_FOR_COMPARISON_OF_inbook <- calculate_RH(p_a_FOR_COMPARISON_OF_inbook, p_sat_FOR_COMPARISON_OF_inbook)
+RH_FOR_COMPARISON_OF_whipple <- calculate_RH(p_a_FOR_COMPARISON_OF_whipple, p_sat_FOR_COMPARISON)
+RH_FOR_COMPARISON_OF_MANUAL <- a * 1e-3 / calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)  
+librarian::shelf("MeTo")
+gamma_MeTo <- psyc_cons(elev = 10)
 calculate_p_H2O
+
+DATA_FRAME_OF_COMPARISON <- data.frame(
+  DEVICES_FOR_COMPARISON,
+  t_d,
+  T_d,
+  t_w,
+  T_w,
+  p_sat_FOR_COMPARISON,
+  p_sat_FOR_COMPARISON_OF_inbook,
+  gamma_FOR_COMPARISON,
+  p_a_FOR_COMPARISON,
+  p_a_FOR_COMPARISON_OF_inbook,
+  p_a_FOR_COMPARISON_OF_whipple,
+  RH_FOR_COMPARISON,
+  RH_FOR_COMPARISON_OF_inbook,
+  RH_FOR_COMPARISON_OF_whipple,
+  RH_FOR_COMPARISON_OF_MANUAL
+)
+
+DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
+
+print(DATA_FRAME_OF_COMPARISON_TRANSPOSED)
+
+footnote_1 <- footnote_marker_number(1)
+footnote_2 <- footnote_marker_number(2)
+footnote_1_3 <- paste(footnote_1, footnote_marker_number(3))
+
+rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
+  "Seade",
+  "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
+  "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
+  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_2),
+  "$\\frac{\\gamma}{\\unit{\\pascal\\per\\kelvin}}$",
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3),
+  paste("$RH$", footnote_1),
+  paste("$RH$", footnote_2),
+  paste("$RH$", footnote_1_3),
+  paste("$RH$", footnote_marker_number(4))
+)
+
+colnames(DATA_FRAME_OF_COMPARISON) <- c(
+  "Seade",
+  "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
+  "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
+  "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
+  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_2),
+  "$\\frac{\\gamma}{\\unit{\\pascal\\per\\kelvin}}$",
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3),
+  paste("$RH$", footnote_1),
+  paste("$RH$", footnote_2),
+  paste("$RH$", footnote_1_3)
+)
+
+print_table(
+  DATA_FRAME_OF_COMPARISON_TRANSPOSED,
+  caption = "Psühhomeetrilised võrdlusandmed.",
+  digits = 3
+) %>%
+  footnote(number = c("(ref:ashrae)", "(ref:inbook)", "(ref:whipple)", "juhend"))
 
 # a_FOR_COMPARISON <- 
 ```
 
+[@a2022_cranmeto]
 
-
+```{r}
+A_1 <- 13.6+(17-16)/2*(14.5-13.6)
+A_1
+a <- A_1-.64*(24-16.5)
+a
+A <- 22.2
+RH <- A_1 / A
+RH
+RH <- a / A
+RH
+```
 
 
 Tabelis on esitatud erinevused minu arvutuste
@@ -212,8 +310,6 @@ T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * (p_
 T_dp
 ```
 ```{r}
-library("MeTo")
-psyc_cons(elev = 2, P = 101.325)
 psyc_cons(elev = 2)
 
 ```

@@ -10,50 +10,16 @@ Joonisel \@ref(fig:relative-humidity) on näidatud, kuidas suhteline õhuniiskus
 include_svg("relative-humidity.webp")
 ```
 
-Õhuniiskust saab mõõta psühromeetriga. Viimases on kaks termomeetrit: üks kuiva, teine niiske õhu jaoks. Kuiva õhu termomeetri näitu ei manipuleerita. Küll aga tehakse niiskeks teise termomeetri sensor, misjärel hakkab selle termomeetri näit vähenema, sest see niiskus aurub ja aurumisel võetakse ümbritsevast keskkonnast soojusenergiat, mistõttu ümbritsev keskkond jahtub. See jahtumine toimub siiski ainult selle termomeetri sensori ümber ja ei mõjuta teise termomeetri sensori ümbrust. Niiske termomeetri näit langeb, kuni see enam langeda ei saa, st on saavutatud olek, milles edasine aurumine ja kondenseerumine üksteist tasakaalustavad - on jõutud kastepunktini. Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt diagrammilt \@ref(fig:psychrometric-diagram) vaadata õhuniiskuse, sest eri temperatuuril on õhu võime endasse veeauru mahutada erinev ja need väärtused on katseliselt välja arvutatud.
+Õhuniiskust saab mõõta psühromeetriga. Viimases on kaks termomeetrit: üks kuiva, teine niiske õhu jaoks. Kuiva õhu termomeetri näitu ei manipuleerita. Küll aga tehakse niiskeks teise termomeetri sensor, misjärel hakkab selle termomeetri näit vähenema, sest see niiskus aurub ja aurumisel võetakse ümbritsevast keskkonnast soojusenergiat, mistõttu ümbritsev keskkond jahtub. See jahtumine toimub siiski ainult selle termomeetri sensori ümber ja ei mõjuta teise termomeetri sensori ümbrust. Niiske termomeetri näit langeb, kuni see enam langeda ei saa, st on saavutatud olek, milles edasine aurumine on võimatu, sest õhk ei võta rohkem auru vastu - on jõutud küllastuspunktini.
 
-(ref:psychrometric-chart) @psychrometric-chart
+Õhutemperatuur saab langeda veel kastepunktini, mis on selline temperatuur, mille juures hakkab veeaur õhust pinnale, mille temperatuur on kastepunktist väiksem, kondenseeruma.
 
-```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
-include_svg("0000Psych11x17US_SI_logos.pdf")
-```
+Kastepunkti saab otse mõõta võttes nt mingi keraja metalse või klaaspinnaga kausi ja täites selle kausi ainega, mille temperatuur on sama mis õhutemperatuur. Seejärel tuleb kausis oleva aine temperatuuri alandada ja kui kausi välispinnale tekivad tilgad, ongi saavutatud kastepunkt.
 
-Absoluutse niiskuse arvutamiseks on juhendis valem
+Selleks, et arvutada suhtelist õhuniiskust, on vaja teada kas rõhke või masse. Kumbagi on keeruline otse mõõta. Lihtne on mõõta temperatuuri ja temperatuuride järgi saab arvutada rõhud. Arvutamiseeskiri võiks olla selline:
 
-```{=tex}
-\begin{align}
-a := \gamma_\text{w} \cdot 10^3 - 0.64 \cdot (t_\text{d} - t_\text{w}).
-(\#eq:a)
-\end{align}
-```
+1. küllastusrõhu arvutamine õhutemperatuuri (kuiv termomeetri kolv) järgi kasutades valemit \@ref(eq:saturation-pressure-over-liquid-h2o) või \@ref(eq:saturation-pressure-in-inbook),
 
-Dimensionaalanalüüs:
+2. tegeliku rõhu arvutamine kuiva ja märja kolviga termomeetri temperatuuride, atmosfäärirõhu ja psühromeetri tüübi järgi kasutades valemit \@ref(eq:actual-vapor-pressure),
 
-```{=tex}
-\begin{align}
-\frac{M}{L^3} - \Theta,
-(\#eq:dimensional-analysis-for-a)
-\end{align}
-```
-
-millest lähtuvalt on ühik $\unit{\gram\per\cubic\meter} - \unit{\kelvin}$.
-
-Valemit \@ref(eq:a) kasutatakse juhendis suhtelise niiskuse arvutamiseks:
-
-```{=tex}
-\begin{align}
-RH := \frac{a}{\gamma_\text{d} \cdot 10^3}.
-(\#eq:rh-in-instructions)
-\end{align}
-```
-
-Dimensionaalanalüüs:
-
-```{=tex}
-\begin{align}
-\frac{\frac{M}{L^3} - \Theta}{\frac{M}{L^3}} = 1 - \frac{\Theta}{\frac{M}{L^3}} = \frac{\Theta}{\frac{M}{L^3}},
-(\#eq:dimensional-analysis-for-rh-in-instructions)
-\end{align}
-```
-
-millest lähtuvalt on ühik $\unit{\kelvin\per\gram\per\cubic\meter}$.
+3. suhtelise niiskuse arvutamine kasutades tegelikku ja küllastusrõhku.

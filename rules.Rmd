@@ -91,6 +91,11 @@ milles *n* on ainehulk, *R* on universaalne gaasikonstant $`r R` \times \unit{\j
 mistõttu ühik on $\unit{\kilogram\per\meter\per\second\squared}$ ehk lühemalt $\unit{\pascal}$.
 ```{r label = "p-sat-of-liquid-h2o"}
 
+#' This function calculates the saturation vapor pressure.
+#' 
+#' @param T the absolute temperature
+#' 
+#' @returns the saturation vapor pressure
 calculate_p_H2O <- function(T) {
   
   for (index in 1:length(T)) {
@@ -104,6 +109,17 @@ calculate_p_H2O <- function(T) {
   return(exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
 }
 
+T_p_sat <- 237.3 - T_0
+
+#' This function calculates the saturation pressure.
+#' 
+#' @param T the absolute temperature
+#' 
+#' @returns the saturation pressure of the dry bulb
+calculate_p_sat_in_inbook <- function(T) {
+  return(610.8 * exp((17.27 * (T - T_0)) / (T + T_p_sat)))
+}
+
 ```
 
 Küllastusrõhk vedela vee kohal temperatuurivahemikus $\qty{`r T_0`}{\kelvin}$ kuni $\qty{`r T_1`}{\kelvin}$ on antud valemiga
@@ -111,7 +127,7 @@ Küllastusrõhk vedela vee kohal temperatuurivahemikus $\qty{`r T_0`}{\kelvin}$ 
 ```{=tex}
 
 \begin{align}
-& p_\text{ws} && := e^{\sum_{i := 8}^{n}{C_i \times T^{i - 9}} + 6.5459673 \times \mathrm{ln}(T)}\\
+& p_\text{sat} && := e^{\sum_{i := 8}^{n}{C_i \times T^{i - 9}} + 6.5459673 \times \mathrm{ln}(T)}\\
 &&&= e^{\sum_{i := 8}^n{C_i \times (t + 273.15)^{i - 9}} + 6.5459673 \times \mathrm{ln}(t + 273.15)}\text{, kus}\\
 & C_8 && := -5.8002206 \times 10^3,\\
 & C_9 && := 1.3914993,\\
@@ -123,7 +139,19 @@ Küllastusrõhk vedela vee kohal temperatuurivahemikus $\qty{`r T_0`}{\kelvin}$ 
 
 ```
 
-milles *T* on absoluutne temperatuur [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14].
+milles *T* on absoluutne temperatuur [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14]. [@inbook, p. 37] on esitatud teistsugune valem küllastusrõhu arvutamiseks:
+
+```{=tex}
+
+\begin{align}
+p_\text{sat} := 610.8 \times e^\frac{17.27 \times (T - \qty{`r T_0`}{\kelvin})}{T - \qty{`r T_0`}{\kelvin} + \qty{237.3}{\kelvin}} \times \unit{\pascal} = 610.8 \times e^\frac{17.27 \times (T - \qty{`r T_0`}{\kelvin})}{T + \qty{`r T_p_sat`}{\kelvin}} \times \unit{\pascal}.
+(\#eq:saturation-pressure-in-inbook)
+\end{align}
+
+```
+
+Tegeliku rõhu arvutamiseks saab samuti kasutada nii valemit \@ref(eq:saturation-pressure-over-liquid-h2o) kui \@ref(eq:saturation-pressure-in-inbook), kui on teada kastepunkt.
+
 
 ## Energia, töö, soojushulk
 
@@ -556,6 +584,30 @@ Psühhomeetriline konstant on konstant ainult püsiva rõhu korral, mis tähenda
 c_p_d <- 1.006e3
 delta_vap_h <- 2500.9e3
 EPSILON_WITHOUT_P <- c_p_d / (M_w_TO_M_d * delta_vap_h)
+B <- .5 / 755
+
+#' This function calculates the psychrometric coefficient.
+#'
+#' @param P the atmospheric pressure
+#' @param type_of_psychrometer either "ventilated", "natural ventilated" or "non-ventilated" or if left out, the universal constant will be used from the year 1933
+#' 
+#' @returns the psychrometric coefficient
+calculate_gamma <- function(P, type_of_psychrometer = NULL) {
+  
+  if (is.null(type_of_psychrometer)) {
+    a_psy <- B
+  } else if ("ventilated" == type_of_psychrometer) {
+    a_psy <- EPSILON_WITHOUT_P
+  } else if ("natural ventilated" == type_of_psychrometer) {
+    a_psy <- 8e-4
+  } else if ("non-ventilated" == type_of_psychrometer) {
+    a_psy <- 1.2e-3
+  } else {
+    stop(paste("The type of the psychrometer must be either \"ventilated\", \"natural ventilated\" or \"non-ventilated\" or left out for the year 1933 value. The current type is", type_of_psychrometer, "."))
+  }
+  
+  return(a_psy * P)
+}
 
 ```
 
@@ -576,7 +628,72 @@ milles $c_p$ on õhu erisoojus, $\lambda$ on vee aurustumissoojus [@haynes_2014_
 \end{align}
 ```
 
-millest johtuvalt on ühik $\unit{\kilogram\per\meter\per\second\squared\per\kelvin}$ ehk lühemalt $\unit{\pascal\per\kelvin}$.
+millest johtuvalt on ühik $\unit{\kilogram\per\meter\per\second\squared\per\kelvin}$ ehk lühemalt $\unit{\pascal\per\kelvin}$. Psühromeetriline tegur on erinev sõltuvalt sellest, kas psühhomeeter on ventileeritud ja kuidas see on ventileeritud. Valem \@ref(eq:psychrometric-coefficient) kehtib automaatselt ventileeritud psühhomeetri kasutamise puhul, milles õhk liigub umbes $\qty{5}{\meter\per\second}$ nagu nt Assmanni psühhomeetris. Loomuliku ventilatsiooniga psühhomeetri puhul, milles õhk liigub umbes  $\qty{1}{\meter\per\second}$, soovitatakse [@inbook, p. 38] kasutada valemit
+
+```{=tex}
+\begin{align}
+\gamma := 8 \times 10^{-4} \times \unit{\per\kelvin} \times P.
+(\#eq:psychrometric-coefficient-for-natural-ventilation)
+\end{align}
+```
+
+Kui psühromeetril ventilatsioon üldse puudub, tuleb kasutada valemit:
+
+```{=tex}
+\begin{align}
+\gamma := 1.2 \times 10^{-3} \times \unit{\per\kelvin} \times P.
+(\#eq:psychrometric-coefficient-without-ventilation)
+\end{align}
+```
+
+[@Whipple_1933] üldistatakse psühhomeetrilise teguri valem selliseks ja sellist valemit tohib kasutada vedela vee kohta:
+
+```{=tex}
+\begin{align}
+\gamma := \frac{.5}{755} \times P = `r B` \times \unit{\per\kelvin} \times P.
+(\#eq:psychrometric-coefficient-in-whipple)
+\end{align}
+```
+
+Kui kastepunkt ei ole teada, mis psühhomeetri kasutamise puhul nii ongi, saab kasutada järgmist valemit, millesse on kaasatud psühhomeetriline tegur:
+```{r label = "calculate_p_a"}
+#' This function calculates the actual vapor pressure.
+#'
+#' @param p_sat_at_T_w the saturation pressure at the temperature of the wet bulb
+#' @param gamma the psychrometric constant
+#' @param T_d the absolute temperature of the dry bulb
+#' @param T_w the absolute temperature of the wet bulb
+#' 
+#' @returns the actual vapor pressure
+calculate_p_a <- function(p_sat_at_T_w, gamma, T_d, T_w) {
+  return(p_sat_at_T_w - gamma * (T_d - T_w))
+}
+
+```
+
+```{=tex}
+\begin{align}
+p_\text{a} := p_\text{sat}(T_\text{w}) - \gamma \cdot (T_\text{d} - T_\text{w}).
+(\#eq:actual-vapor-pressure)
+\end{align}
+```
+
+Avaldan tegeliku veeauru rõhu valemist \@ref(eq:actual-vapor-pressure) märja kolviga termomeetri näidu:
+```{r label = "calculation-of-wet-bulb-temperature"}
+calculate_T_w <- function(p_a, gamma, T_d, p_sat_at_T_w) {
+  return((p_a + gamma * T_d - p_sat_at_T_w) / gamma)
+}
+
+```
+
+```{=tex}
+\begin{align}
+p_\text{a} :&= p_\text{sat}(T_\text{w}) - \gamma \cdot T_\text{d} + \gamma \cdot T_\text{w}\\
+\gamma \cdot T_\text{w} &= p_\text{a} + \gamma \cdot T_\text{d} - p_\text{sat}(T_\text{w})\\
+T_\text{w} :&= \frac{ p_\text{a} + \gamma \cdot T_\text{d} - p_\text{sat}(T_\text{w})}{\gamma}.
+(\#eq:wet-bulb-temperature)
+\end{align}
+```
 
 ### Massi voolukiirus
 
@@ -673,7 +790,7 @@ calculate_gamma_H2O <- function(p_H2O, T) {
   return(p_H2O * M_H2O / (R * T))
 }
 
-gamma_H2O <- calculate_gamma_H2O(calculate_p_H2O(T), T)
+gamma_H2O <- calculate_gamma_H2O(p_H2O, T)
 
 density_of_saturated_H2O <- data.frame(
   t,
@@ -843,20 +960,6 @@ p_\text{w} :&= \frac{W \times p}{W + `r M_w_TO_M_d`}.
 ``` 
 
 
-Absoluutne niiskus ehk rõhk kastepunktis:
-```{r label = "rules-b"}
-B <- .5 / 755
-```
-
-```{=tex}
-\begin{align}
-p_\text{dp} := p_\text{w} - (T_\text{d} - T_\text{w}) \cdot p \cdot B,
-(\#eq:absolute-humidity)
-\end{align}
-```
-
-milles *dp* tähendab kastepunkti, *w* märga ja *d* kuiva ning $B := `r B` \times \unit{\per\kelvin}$ [@Whipple_1933]. See absoluutse niiskuse arvutamise valem kehtib vedela vee kohta.
-
 suhteline niiskus
 : õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
 temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
@@ -871,7 +974,7 @@ RH :&= \cfrac{m_\text{w}}{m_\text{sat}(\text{w})} = \cfrac{M_\text{w} \cdot n_\t
 \end{align}
 ```
 
-[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14], [@relative], [@numerically-degree-of-saturation].
+[@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14], [@relative], [@numerically-degree-of-saturation], [@inbook, p. 36].
 
 Dimensionaalanalüüs:
 
@@ -890,13 +993,10 @@ calculate_RH <- function(p_dp, p_d_H2O) {
   return(p_dp / p_d_H2O)
 }
 
-calculate_p_dp <- function(p_w_H2O, T_d, T_w) {
-  return(p_w_H2O - (T_d - T_w) * p_at / 1510)
-}
-
 t_d <- c(seq(10, 24, 1), seq(24.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
 T_d <- GetTKelvinFromTCelsius(t_d)
 delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
+gamma_whipple <- calculate_gamma(p_at)
 
 calculate_RH_from_delta_T <- function(T_d, delta_T) {
   RH <- c()
@@ -908,7 +1008,7 @@ calculate_RH_from_delta_T <- function(T_d, delta_T) {
       RH <- c(RH, "")
     } else {
       p_w_H2O <- calculate_p_H2O(T_w)
-      p_dp <- calculate_p_dp(p_w_H2O, T_d[index], T_w)
+      p_dp <- calculate_p_a(p_w_H2O, gamma_whipple, T_d[index], T_w)
       p_d_H2O <- calculate_p_H2O(T_d[index])
 
       if (p_dp < 0) {
@@ -971,6 +1071,69 @@ Dimensionaalanalüüs:
 (\#eq:dimensional-analysis-for-humidity-ratio-from-relative-humidity)
 \end{align}
 ``` 
+
+Absoluutse niiskuse ehk tegelikult tiheduse arvutamiseks on juhendis valem
+
+```{=tex}
+\begin{align}
+a := \gamma_\text{w} \cdot 10^3 - 0.64 \cdot (t_\text{d} - t_\text{w}).
+(\#eq:a)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{M}{L^3} - \Theta,
+(\#eq:dimensional-analysis-for-a)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\gram\per\cubic\meter} - \unit{\kelvin}$.
+
+Valemit \@ref(eq:a) kasutatakse juhendis suhtelise niiskuse arvutamiseks:
+
+```{=tex}
+\begin{align}
+RH := \frac{a}{\gamma_\text{d} \cdot 10^3}.
+(\#eq:rh-in-instructions)
+\end{align}
+```
+
+Dimensionaalanalüüs:
+
+```{=tex}
+\begin{align}
+\frac{\frac{M}{L^3} - \Theta}{\frac{M}{L^3}} = 1 - \frac{\Theta}{\frac{M}{L^3}} = \frac{\Theta}{\frac{M}{L^3}},
+(\#eq:dimensional-analysis-for-rh-in-instructions)
+\end{align}
+```
+
+millest lähtuvalt on ühik $\unit{\kelvin\per\gram\per\cubic\meter}$.
+
+Ilmselgelt on juhendis viga, sest suhtelise niiskuse ühik võib olla kas üks või erinevate ainete samade ühikute suhe. Seega modifitseerin esmalt juhendis olevat tegeliku veeauru tiheduse õhus valemit \@ref(eq:a), et see oleks õige:
+```{r}
+calculate_a <- function(gamma_w, T_d, T_w) {
+  gamma_w * 1e3 - .64 * (T_d - T_w)
+}
+
+```
+
+```{=tex}
+\begin{align}
+a := \gamma_\text{w} \cdot 10^3 - \qty{0.64}{\kilogram\per\cubic\meter\per\kelvin} \cdot (T_\text{d} - T_\text{w}).
+(\#eq:a-corrected)
+\end{align}
+```
+
+Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt diagrammilt \@ref(fig:psychrometric-diagram) vaadata õhuniiskuse, sest eri temperatuuril on õhu võime endasse veeauru mahutada erinev ja need väärtused on katseliselt välja arvutatud.
+
+(ref:psychrometric-chart) @psychrometric-chart
+
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
+include_svg("0000Psych11x17US_SI_logos.pdf")
+```
 
 Summaarne entalpia, millesse asendan entalpiad erientalpiatega valemist \@ref(eq:specific-enthalpy):
 
