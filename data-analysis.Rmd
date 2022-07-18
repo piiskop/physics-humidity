@@ -17,16 +17,16 @@ t_d <- c(24, 24.6, 26.3)
 SetUnitSystem("SI")
 T_d <- GetTKelvinFromTCelsius(t_d)
 RH_Pasco <- 30.8e-2
-t_w_Pasco <- GetTWetBulbFromRelHum(t_d[3], RH_Pasco, p_at)
+t_w_Pasco <- signif(GetTWetBulbFromRelHum(t_d[3], RH_Pasco, p_at), digits = 3)
 t_w <- c(16.5, 15.2, t_w_Pasco)
 T_w <- GetTKelvinFromTCelsius(t_w)
-p_w_H2O <- calculate_p_H2O(T_w)
+p_w_H2O <- calculate_p_sat(T_w, "ASHRAE")
 gamma_w <- calculate_gamma_H2O(p_w_H2O, T_w)
 p_dp <- calculate_p_a(p_w_H2O, gamma_whipple, t_d, t_w)
-gamma_d <- calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
+gamma_d <- calculate_gamma_H2O(calculate_p_sat(T_d, method = "ASHRAE"), T_d)
 a <- calculate_a(gamma_w, t_d, t_w)
 a[3] <- 7.6
-p_d_H2O <- calculate_p_H2O(T_d)
+p_d_H2O <- calculate_p_sat(T_d, method = "ASHRAE")
 RH <- calculate_RH(p_dp, p_d_H2O)
 RH_according_to_instructions <- a / (gamma_d * 1e3) * 100
 RH_psychrolib <- GetRelHumFromTWetBulb(t_d, t_w, p_at)
@@ -103,8 +103,8 @@ librarian::shelf("psychrolib")
 ```{r label = "dp"}
 t_dp_Pasco <- 6.8
 T_dp_Pasco <- GetTKelvinFromTCelsius(t_dp_Pasco)
-p_dp <- calculate_p_H2O(T_dp_Pasco)
-p_d <- calculate_p_H2O(GetTKelvinFromTCelsius(t_d[3]))
+p_dp <- calculate_p_sat(T_dp_Pasco, method = "ASHRAE")
+p_d <- calculate_p_sat(GetTKelvinFromTCelsius(t_d[3]), method = "ASHRAE")
 RH <- calculate_RH(p_dp, p_d)
 t_dp_r <- 5.9
 T_dp_r <- GetTKelvinFromTCelsius(t_dp_r)
@@ -114,8 +114,16 @@ Pasco ilmajaamaga väljamõõdetud kastepunkt oli $\qty{`r t_dp_Pasco`}{\degreeC
 
 Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\qty{`r T_dp_r`}{\kelvin}$.
 ```{r label = "own-calculations"}
-W <- calculate_W(T_d, T_w)
-T_dp <- calculate_Tdp(W)
+T_dp <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
+```
+```{r}
+trash <- calculate_trash(T_d, T_w)
+print(trash)
+more_trash <- calculate_more_trash(T_d, T_w)
+print(more_trash)
+some_trash <- calculate_some_trash(T_d, T_w)
+print(some_trash)
+
 ```
 
 Augusti psühhomeetriga mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[1]`}{\kelvin}$. Tabeli järgi 
@@ -161,28 +169,96 @@ print_table(
 <!-- # chart -->
 <!-- # r ehk minu -->
 
-(ref:inbook) @inbook, p. 37
-(ref:ashrae) @American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 14
-(ref:whipple) @Whipple_1933, p. 315
+(ref:saturation-pressure-over-liquid-h2o) \@ref(eq:saturation-pressure-over-liquid-h2o)
+(ref:saturation-pressure-in-inbook) \@ref(eq:saturation-pressure-in-inbook)
+(ref:humidity-ratio-using-enthalpies) \@ref(eq:humidity-ratio-using-enthalpies)
+(ref:actual-vapor-pressure) \@ref(eq:actual-vapor-pressure)
+(ref:psychrometric-coefficient-in-whipple) \@ref(eq:psychrometric-coefficient-in-whipple)
+(ref:psychrometric-coefficient) \@ref(eq:psychrometric-coefficient)
+(ref:psychrometric-coefficient-for-natural-ventilation) \@ref(eq:psychrometric-coefficient-for-natural-ventilation)
+(ref:partial-vapor-pressure-from-humidity-ratio) \@ref(eq:partial-vapor-pressure-from-humidity-ratio)
+(ref:relative-humidity-as-ratio-of-pressure) \@ref(eq:relative-humidity-as-ratio-of-pressure)
+(ref:dew-point-temperature) \@ref(eq:dew-point-temperature)
+(ref:dew-point-temperature-inbook-with-psychrometer) \@ref(eq:dew-point-temperature-inbook-with-psychrometer)
 
 Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
 
 ```{r label = "comparison-of-pressure"}
 DEVICES_FOR_COMPARISON <- c("Augusti psühromeeter", "Assmanni psühromeeter", "Pasco ilmajaam")
-p_sat_FOR_COMPARISON <- calculate_p_H2O(T_d)
-p_sat_FOR_COMPARISON_OF_inbook <- calculate_p_sat_in_inbook(T_d)
-gamma_FOR_COMPARISON <- c(calculate_gamma(p_at, "natural ventilated"), calculate_gamma(p_at, "ventilated"), calculate_gamma(p_at, "non-ventilated"))
-p_sat_at_T_w_FOR_COMPARISON <- calculate_p_H2O(T_w)
-p_a_FOR_COMPARISON <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON, gamma_FOR_COMPARISON, T_d, T_w)
-p_a_FOR_COMPARISON_OF_inbook <- calculate_p_a(calculate_p_sat_in_inbook(T_w), gamma_FOR_COMPARISON, T_d, T_w)
-p_a_FOR_COMPARISON_OF_whipple <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON, calculate_gamma(p_at), T_d, T_w)
-RH_FOR_COMPARISON <- calculate_RH(p_a_FOR_COMPARISON, p_sat_FOR_COMPARISON)
-RH_FOR_COMPARISON_OF_inbook <- calculate_RH(p_a_FOR_COMPARISON_OF_inbook, p_sat_FOR_COMPARISON_OF_inbook)
-RH_FOR_COMPARISON_OF_whipple <- calculate_RH(p_a_FOR_COMPARISON_OF_whipple, p_sat_FOR_COMPARISON)
-RH_FOR_COMPARISON_OF_MANUAL <- a * 1e-3 / calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)  
+
+gamma_FOR_COMPARISON <- c(calculate_gamma(p_at, "natural ventilated"), calculate_gamma(p_at, "ventilated"), calculate_gamma(p_at, "ventilated"))
+
+p_sat_at_T_w_FOR_COMPARISON_WITH_ASHRAE <- calculate_p_sat(T_w, method = "ASHRAE")
+p_sat_at_T_w_FOR_COMPARISON_WITH_FAO <- calculate_p_sat(T_w, method = "FAO")
+
+p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE <- calculate_p_sat(T_d, method = "ASHRAE")
+p_sat_at_T_d_FOR_COMPARISON_WITH_FAO <- calculate_p_sat(T_d, method = "FAO")
+
+W_WITH_ASHRAE <- calculate_W(T_d, T_w, method = "ASHRAE")
+W_WITH_FAO <- calculate_W(T_d, T_w, method = "FAO")
+
+p_a_FOR_COMPARISON_WITH_ASHRAE_AND_Whipple <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON_WITH_ASHRAE, calculate_gamma(p_at), T_d, T_w)
+p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON_WITH_ASHRAE, gamma_FOR_COMPARISON, T_d, T_w)
+p_a_FOR_COMPARISON_WITH_FAO_AND_Whipple <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON_WITH_FAO, calculate_gamma(p_at), T_d, T_w)
+p_a_FOR_COMPARISON_WITH_FAO <- calculate_p_a(p_sat_at_T_w_FOR_COMPARISON_WITH_FAO, gamma_FOR_COMPARISON, T_d, T_w)
+p_a_FOR_COMPARISON_FROM_W_WITH_ASHRAE <- calculate_P_from_W(W_WITH_ASHRAE)
+p_a_FOR_COMPARISON_FROM_W_WITH_FAO <- calculate_P_from_W(W_WITH_FAO)
+
+RH_FOR_COMPARISON_WITH_p_a_ASHRAE_AND_Whipple_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_Whipple, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_WITH_p_a_ASHRAE_AND_Whipple_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_Whipple, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_WITH_p_a_FAO_AND_Whipple_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_WITH_FAO_AND_Whipple, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_WITH_p_a_FAO_AND_Whipple_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_WITH_FAO_AND_Whipple, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_ASHRAE, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_ASHRAE, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
+RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+
+T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
+T_dew_FOR_COMPARISON_FROM_W_WITH_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "FAO")
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from pressure", method_for_p = "ASHRAE", gamma = gamma_FOR_COMPARISON)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from pressure", method_for_p = "ASHRAE")
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from pressure", method_for_p = "FAO", gamma = gamma_FOR_COMPARISON)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_NON_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from pressure", method_for_p = "FAO")
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "ASHRAE", gamma_FOR_COMPARISON)
+T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "ASHRAE")
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "FAO", gamma_FOR_COMPARISON)
+T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "FAO")
+
+footnote_6 <- footnote_marker_number(6)
+footnote_7 <- footnote_marker_number(7)
+footnote_8 <- footnote_marker_number(8)
+footnote_6_8 <- paste(footnote_6, footnote_8)
+p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[1] <- paste(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[1], footnote_7)
+p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[2] <- paste(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[2], footnote_6)
+p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[3] <- paste(p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO[3], footnote_6_8)
+p_a_FOR_COMPARISON_WITH_FAO[1] <- paste(p_a_FOR_COMPARISON_WITH_FAO[1], footnote_7)
+p_a_FOR_COMPARISON_WITH_FAO[2] <- paste(p_a_FOR_COMPARISON_WITH_FAO[2], footnote_6)
+p_a_FOR_COMPARISON_WITH_FAO[3] <- paste(p_a_FOR_COMPARISON_WITH_FAO[3], footnote_6_8)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[1] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[1], footnote_7)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[2] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[2], footnote_6)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[3] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[3], footnote_6_8)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[1] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[1], footnote_7)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[2] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[2], footnote_6)
+T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[3] <- paste(T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO[3], footnote_6_8)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[1] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[1], footnote_7)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[2] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[2], footnote_6)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[3] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE[3], footnote_6_8)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[1] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[1], footnote_7)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2], footnote_6)
+T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3], footnote_6_8)
+
+# RH_FOR_COMPARISON_OF_MANUAL <- a * 1e-3 / calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
+# T_dew_FOR_COMPARISON_FROM_W <- calculate_Tdp(T_d, T_w, "universal from humidity ratio")
+# T_dew_FOR_COMPARISON_FROM_ASHRAE <- calculate_Tdp(T_d, T_w, "universal from ASHRAE")
+# T_dew_FOR_COMPARISON_FROM_FAO <- calculate_Tdp(T_d, T_w, "universal from FAO")
+# T_dew_WITH_PSYCHROMETER <- calculate_Tdp(T_d[1:2], T_w[1:2], "with psychrometer")
+# T_dew_FOR_COMPARISON_REGARDING_TO_PSYCHROMETER <- c(T_dew_WITH_PSYCHROMETER, calculate_Tdp(T_d[3], T_w[3], "without psychrometer"))
 librarian::shelf("MeTo")
 gamma_MeTo <- psyc_cons(elev = 10)
-calculate_p_H2O
 
 DATA_FRAME_OF_COMPARISON <- data.frame(
   DEVICES_FOR_COMPARISON,
@@ -190,25 +266,78 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   T_d,
   t_w,
   T_w,
-  p_sat_FOR_COMPARISON,
-  p_sat_FOR_COMPARISON_OF_inbook,
   gamma_FOR_COMPARISON,
-  p_a_FOR_COMPARISON,
-  p_a_FOR_COMPARISON_OF_inbook,
-  p_a_FOR_COMPARISON_OF_whipple,
-  RH_FOR_COMPARISON,
-  RH_FOR_COMPARISON_OF_inbook,
-  RH_FOR_COMPARISON_OF_whipple,
-  RH_FOR_COMPARISON_OF_MANUAL
+  p_sat_at_T_w_FOR_COMPARISON_WITH_ASHRAE,
+  p_sat_at_T_w_FOR_COMPARISON_WITH_FAO,
+  p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE,
+  p_sat_at_T_d_FOR_COMPARISON_WITH_FAO,
+  W_WITH_ASHRAE,
+  W_WITH_FAO,
+  p_a_FOR_COMPARISON_WITH_ASHRAE_AND_Whipple,
+  p_a_FOR_COMPARISON_WITH_ASHRAE_AND_FAO,
+  p_a_FOR_COMPARISON_WITH_FAO_AND_Whipple,
+  p_a_FOR_COMPARISON_WITH_FAO,
+  p_a_FOR_COMPARISON_FROM_W_WITH_ASHRAE,
+  p_a_FOR_COMPARISON_FROM_W_WITH_FAO,
+  RH_FOR_COMPARISON_WITH_p_a_ASHRAE_AND_Whipple_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_WITH_p_a_ASHRAE_AND_Whipple_p_sat_FAO,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_FAO,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_AND_Whipple_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_AND_Whipple_p_sat_FAO,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_WITH_p_a_FAO_p_sat_FAO,
+  RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_FAO,
+  RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_ASHRAE,
+  RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO,
+  T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE,
+  T_dew_FOR_COMPARISON_FROM_W_WITH_FAO,
+  T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
+  T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE,
+  T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_FAO,
+  T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_NON_TYPED_PSYCHROMETER_AND_FAO,
+  T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
+  T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE,
+  T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO,
+  T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO
+  # RH_FOR_COMPARISON,
+  # RH_FOR_COMPARISON_OF_inbook,
+  # RH_FOR_COMPARISON_OF_whipple,
+  # RH_FOR_COMPARISON_OF_MANUAL,
+  # T_dew_FOR_COMPARISON_FROM_W,
+  # T_dew_FOR_COMPARISON_FROM_ASHRAE,
+  # T_dew_FOR_COMPARISON_FROM_FAO,
+  # T_dew_FOR_COMPARISON_REGARDING_TO_PSYCHROMETER
 )
 
 DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
 
-print(DATA_FRAME_OF_COMPARISON_TRANSPOSED)
-
 footnote_1 <- footnote_marker_number(1)
 footnote_2 <- footnote_marker_number(2)
-footnote_1_3 <- paste(footnote_1, footnote_marker_number(3))
+footnote_3 <- footnote_marker_number(3)
+footnote_4 <- footnote_marker_number(4)
+footnote_5 <- footnote_marker_number(5)
+footnote_9 <- footnote_marker_number(9)
+footnote_10 <- footnote_marker_number(10)
+footnote_11 <- footnote_marker_number(11)
+footnote_12 <- footnote_marker_number(12)
+footnote_13 <- footnote_marker_number(13)
+footnote_1_2 <- paste(footnote_1, footnote_2)
+footnote_1_3 <- paste(footnote_1, footnote_3)
+footnote_1_4 <- paste(footnote_1, footnote_4)
+footnote_2_3 <- paste(footnote_2, footnote_3)
+footnote_2_4 <- paste(footnote_2, footnote_4)
+footnote_5_10 <- paste(footnote_5, footnote_10)
+footnote_5_12 <- paste(footnote_5, footnote_12)
+footnote_9_10 <- paste(footnote_9, footnote_10)
+footnote_9_11 <- paste(footnote_9, footnote_11)
+footnote_1_2_3 <- paste(footnote_1_2, footnote_3)
+footnote_1_2_4 <- paste(footnote_1_2, footnote_4)
+footnote_1_4_5 <- paste(footnote_1_4, footnote_5)
+footnote_2_4_5 <- paste(footnote_2_4, footnote_5)
+footnote_1_2_4_10 <- paste(footnote_1_2_4, footnote_10)
+footnote_1_2_3_9_10 <- paste(footnote_1_2_3, footnote_9_10)
 
 rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   "Seade",
@@ -216,16 +345,42 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
   "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
   "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
-  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_1),
-  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_2),
   "$\\frac{\\gamma}{\\unit{\\pascal\\per\\kelvin}}$",
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1),
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2),
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3),
-  paste("$RH$", footnote_1),
-  paste("$RH$", footnote_2),
-  paste("$RH$", footnote_1_3),
-  paste("$RH$", footnote_marker_number(4))
+  paste("$\\frac{p_\\text{sat}(\\text{w})}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{sat}(\\text{w})}{\\unit{\\pascal}}$", footnote_2),
+  paste("$\\frac{p_\\text{sat}(\\text{d})}{\\unit{\\pascal}}$", footnote_1),
+  paste("$\\frac{p_\\text{sat}(\\text{d})}{\\unit{\\pascal}}$", footnote_2),
+  paste("$W$", footnote_1_3),
+  paste("$W$", footnote_2_3),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_4_5),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_4),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2_4_5),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2_4),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3, footnote_9),
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2_3, footnote_9),
+  paste("$RH$", footnote_1_4_5, footnote_10),
+  paste("$RH$", footnote_1_2, footnote_4, footnote_5_10),
+  paste("$RH$", footnote_1_4, footnote_10),
+  paste("$RH$", footnote_1_2_4_10),
+  paste("$RH$", footnote_1_2_4, footnote_5_10),
+  paste("$RH$", footnote_2_4, footnote_5_10),
+  paste("$RH$", footnote_1_2_4_10),
+  paste("$RH$", footnote_2_4, footnote_10),
+  paste("$RH$", footnote_1_3, footnote_9_10),
+  paste("$RH$", footnote_1_2_3_9_10),
+  paste("$RH$", footnote_1_2_3_9_10),
+  paste("$RH$", footnote_2_3, footnote_9_10),
+  # paste("$RH$", footnote_marker_number(4)),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_3, footnote_9_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_3, footnote_9_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_4, footnote_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_4_5, footnote_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_4, footnote_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_4_5, footnote_11),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1, footnote_12),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1, footnote_5_12),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_12),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_5_12)
 )
 
 colnames(DATA_FRAME_OF_COMPARISON) <- c(
@@ -239,10 +394,7 @@ colnames(DATA_FRAME_OF_COMPARISON) <- c(
   "$\\frac{\\gamma}{\\unit{\\pascal\\per\\kelvin}}$",
   paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1),
   paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2),
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3),
-  paste("$RH$", footnote_1),
-  paste("$RH$", footnote_2),
-  paste("$RH$", footnote_1_3)
+  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3)
 )
 
 print_table(
@@ -250,7 +402,20 @@ print_table(
   caption = "Psühhomeetrilised võrdlusandmed.",
   digits = 3
 ) %>%
-  footnote(number = c("(ref:ashrae)", "(ref:inbook)", "(ref:whipple)", "juhend"))
+  footnote(number = c(
+    "valem (ref:saturation-pressure-over-liquid-h2o)",
+    "valem (ref:saturation-pressure-in-inbook)",
+    "valem (ref:humidity-ratio-using-enthalpies)",
+    "valem (ref:actual-vapor-pressure)",
+    "valem (ref:psychrometric-coefficient-in-whipple)",
+    "valem (ref:psychrometric-coefficient)",
+    "valem (ref:psychrometric-coefficient-for-natural-ventilation)",
+    "Katseliselt leidsin, et Pasco ilmajaamas kasutatakse tõenäoliselt Assmanni psühromeetri reeglistikku.",
+    "valem (ref:partial-vapor-pressure-from-humidity-ratio)",
+    "valem (ref:relative-humidity-as-ratio-of-pressure)",
+    "valem (ref:dew-point-temperature)",
+    "valem (ref:dew-point-temperature-inbook-with-psychrometer)"
+  ))
 
 # a_FOR_COMPARISON <- 
 ```
@@ -279,6 +444,11 @@ SetUnitSystem("SI")
 T_d <- GetTKelvinFromTCelsius(t_d)
 t_w <- c(16.5, 15.2)
 T_w <- GetTKelvinFromTCelsius(t_w)
+GetSatHumRatio(t_w, 101325)
+W <- GetHumRatioFromTWetBulb(t_d, t_w, 101325)
+GetVapPresFromHumRatio(W, 101325)
+GetSatVapPres(t_d)
+GetRelHumFromTWetBulb(t_d, t_w, 101325)
 GetTDewPointFromTWetBulb(t_d, t_w, 101325)
 1.013e-3/(.622 * 2.45)
 1.006/(.622 * 2500.9)

@@ -90,34 +90,36 @@ milles *n* on ainehulk, *R* on universaalne gaasikonstant $`r R` \times \unit{\j
 
 mistõttu ühik on $\unit{\kilogram\per\meter\per\second\squared}$ ehk lühemalt $\unit{\pascal}$.
 ```{r label = "p-sat-of-liquid-h2o"}
+T_p_sat <- 237.3 - T_0 # must be separated as used inside an equation
 
 #' This function calculates the saturation vapor pressure.
 #' 
 #' @param T the absolute temperature
+#' @param method the method of calculation: "ASHRAE" or "FAO"
 #' 
 #' @returns the saturation vapor pressure
-calculate_p_H2O <- function(T) {
+calculate_p_sat <- function(T, method) {
   
-  for (index in 1:length(T)) {
-  
-    if (T[index] < 273.15 | T[index] > 473.15) {
-      stop(paste("The absolute temperature must be between 273.15 and 473.15 K inclusive. The current absolute temperature at the position", index, "is", T[index], "K."))
-    }
+  if (is.null(method)) {
+    stop("The method must be either \"ASHRAE\" or \"FAO\". The method is currently not set.")
+  } else if ("ASHRAE" == method) {
     
+    for (index in 1:length(T)) {
+    
+      if (T[index] < 273.15 | T[index] > 473.15) {
+        stop(paste("The absolute temperature must be between 273.15 and 473.15 K inclusive. The current absolute temperature at the position", index, "is", T[index], "K."))
+      }
+      
+    }
+  
+    p_sat <- exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T))
+  } else if ("FAO" == method) {
+    p_sat <- 610.8 * exp((17.27 * (T - T_0)) / (T + T_p_sat))
+  } else {
+    stop(paste("The method must be either \"ASHRAE\" or \"FAO\". The method is currently", method, "."))
   }
   
-  return(exp(-5.8002206e3 / T + 1.3914993 - 4.8640239e-2 * T + 4.1764768e-5 * T^2 - 1.4452093e-8 * T^3 + 6.5459673 * log(T)))
-}
-
-T_p_sat <- 237.3 - T_0
-
-#' This function calculates the saturation pressure.
-#' 
-#' @param T the absolute temperature
-#' 
-#' @returns the saturation pressure of the dry bulb
-calculate_p_sat_in_inbook <- function(T) {
-  return(610.8 * exp((17.27 * (T - T_0)) / (T + T_p_sat)))
+  return(signif(p_sat, digits = 5))
 }
 
 ```
@@ -606,7 +608,7 @@ calculate_gamma <- function(P, type_of_psychrometer = NULL) {
     stop(paste("The type of the psychrometer must be either \"ventilated\", \"natural ventilated\" or \"non-ventilated\" or left out for the year 1933 value. The current type is", type_of_psychrometer, "."))
   }
   
-  return(a_psy * P)
+  return(signif(a_psy * P, digits = 4))
 }
 
 ```
@@ -666,7 +668,7 @@ Kui kastepunkt ei ole teada, mis psühhomeetri kasutamise puhul nii ongi, saab k
 #' 
 #' @returns the actual vapor pressure
 calculate_p_a <- function(p_sat_at_T_w, gamma, T_d, T_w) {
-  return(p_sat_at_T_w - gamma * (T_d - T_w))
+  return(signif(p_sat_at_T_w - gamma * (T_d - T_w), digits = 4))
 }
 
 ```
@@ -784,7 +786,7 @@ Lasen koostada tabeli \@ref(tab:density-of-saturated-h2o) küllastava veeauru ti
 t <- c(seq(0, 14, 2), seq(15, 27.9, .1), seq(28, 200, 4))
 T <- GetTKelvinFromTCelsius(t)
 
-p_H2O <- calculate_p_H2O(T)
+p_H2O <- calculate_p_sat(T, method = "ASHRAE")
 
 calculate_gamma_H2O <- function(p_H2O, T) {
   return(p_H2O * M_H2O / (R * T))
@@ -868,6 +870,7 @@ niiskuse suhe
 #' Return humidity ratio of saturated air given dry-bulb temperature.
 #'
 #' @param T_d A numeric vector of dry-bulb temperature in [SI]
+#' @param method the method of calculation: "ASHRAE" or "FAO"
 #'
 #' @return A numeric vector of humidity ratio of saturated air in kg_H2O kg_Air-1 [SI]
 #'
@@ -878,19 +881,19 @@ niiskuse suhe
 #' calculate_W(298.15)
 #'
 #' @export
-calculate_W_saturated <- function(T_d) {
+calculate_W_saturated <- function(T_d, method) {
   
-  for (index in length(T_d)) {
-    
-    if (T_d[index] < 0) {
-      stop(paste("The absolute temperature can't be negative. The current absolute temperature is", T_d[index], "K at the position", index, "."))
-    }
+  if (is.null(method)) {
+    stop("The method must be either \"ASHRAE\" or \"FAO\". The method is currently not set.")
+  } else if ("ASHRAE" == method | "FAO" == method) {
+    p_sat <- calculate_p_sat(T_d, method = method)
+  } else {
+    stop(paste("The method must be either \"ASHRAE\" or \"FAO\". The method is currently", method, "."))
+  }
 
-  }  
+  W_saturated <- M_w_TO_M_d * p_sat / (p_at - p_sat)
 
-  p_H2O_saturated <- calculate_p_H2O(T_d)
-  W_saturated <- M_w_TO_M_d * p_H2O_saturated / (p_at - p_H2O_saturated)
-  return(W_saturated)
+  return(signif(W_saturated, digits = 5))
 }
 
 ```
@@ -1007,9 +1010,9 @@ calculate_RH_from_delta_T <- function(T_d, delta_T) {
     if (T_w < 273.15) {
       RH <- c(RH, "")
     } else {
-      p_w_H2O <- calculate_p_H2O(T_w)
+      p_w_H2O <- calculate_p_sat(T_w, method = "ASHRAE")
       p_dp <- calculate_p_a(p_w_H2O, gamma_whipple, T_d[index], T_w)
-      p_d_H2O <- calculate_p_H2O(T_d[index])
+      p_d_H2O <- calculate_p_sat(T_d[index], method = "ASHRAE")
 
       if (p_dp < 0) {
         RH <- c(RH, "")
@@ -1245,6 +1248,7 @@ c_p_sat <- c_p_sat_w - c_p_sat_l
 #'
 #' @param T_d_ A numeric vector of dry-bulb temperature in degreeF [IP] or degreeC [SI]
 #' @param T_w_ A numeric vector of wet-bulb temperature in degreeF [IP] or degreeC [SI]
+#' @param method the method of calculation: "ASHRAE" or "FAO"
 #'
 #' @return A numeric vector of humidity ratio in lb_H2O lb_Air-1 [IP] or kg_H2O kg_Air-1 [SI]
 #'
@@ -1255,22 +1259,20 @@ c_p_sat <- c_p_sat_w - c_p_sat_l
 #' calculate_W(20:30, 19.0, 95461.0)
 #'
 #' @export
-calculate_W <- function(T_d, T_w) {
-
-  for (index in length(T_d)) {
-    
-    if (T_w[index] > T_d[index]) {
-      stop(paste("Wet bulb temperature is above dry bulb temperature. The current wet bulb temperature is", T_w[index], "K and the current dry bulb temperature is", T_d[index], "K at the position", index, "."))
-    }
-    
+calculate_W <- function(T_d, T_w, method) {
+  
+  if (is.null(method)) {
+    stop("The method must be either \"ASHRAE\" or \"FAO\". The method is currently not set.")
+  } else if ("ASHRAE" == method | "FAO" == method) {
+    Wsstar <- calculate_W_saturated(T_w, method = method)
+  } else {
+    stop(paste("The method must be either \"ASHRAE\" or \"FAO\". The method is currently", method, "."))
   }
 
   t_d <- GetTCelsiusFromTKelvin(T_d)
   t_w <- GetTCelsiusFromTKelvin(T_w)
-  
-  Wsstar <- calculate_W_saturated(T_w)
   W <- (Wsstar * (delta_vap_h - c_p_sat * t_w) - c_p_d * (t_d - t_w)) / (delta_vap_h + c_p_sat_w * t_d - c_p_sat_l * t_w)
-  return(W)
+  return(signif(W, digits = 5))
 }
 
 #' Return vapor pressure given humidity ratio and pressure.
@@ -1283,20 +1285,6 @@ calculate_W <- function(T_d, T_w) {
 #' @export
 calculate_P_from_W <- function(W) {
     return(p_at * W / (M_w_TO_M_d + W))
-}
-
-#' This function calculates the dew point temperature between 273.15 K and 366.15 K.
-#'
-#' @param W the humidity ratio
-#' 
-#' @return the dew point temperature
-#' 
-#' @export
-calculate_Tdp <- function(W) {
-  p_w <- calculate_P_from_W(W) / 1e3
-  alpha <- log(p_w)
-  T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984 + T_0
-  return(T_dp)
 }
 
 ```
@@ -1329,15 +1317,6 @@ Avaldan küllastusentalpia valemist \@ref(eq:enthalpy-of-saturated-air) lehekül
 ```{=tex}
 \end{landscape}
 ```
-
-Auru rõhk niiskuse suhte kaudu:
-
-```{=tex}
-\begin{align}
-p_\text{w} := \frac{p \cdot W}{`r M_w_TO_M_d` + W}.
-(\#eq:vapor-pressure-from-humidity-ratio)
-\end{align}
-``` 
 
 Korraldan kogurõhu valemis \@ref(eq:total-pressure) asju ümber ning asendan uude valemisse suhtelise niiskuse valemist \@ref(eq:relative-humidity-as-ratio-of-pressure) ja küllastusastme valemist \@ref(eq:degree-of-saturation), misjärel asendan niiskuse suhte küllastusastme valemist ja avaldan küllastusastme:
 
@@ -1375,6 +1354,94 @@ RH :&= \frac{\mu}{1 + \frac{p_\text{w} \times (\mu - 1)}{p}}
 ``` 
 
 [@numerically-relative-humidity], [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 15].
+```{r label = "dew-point"}
+
+#' This function calculates the dew point temperature between 273.15 K and 366.15 K.
+#'
+#' @param T_d the dry bulb temperature
+#' @param T_w the wet bulb temperature
+#' @param method_for_dew either "universal from humidity ratio", "universal from pressure", "with psychrometer" or "without psychrometer"
+#' @param method_for_p the method of calculation: "ASHRAE" or "FAO"
+#' @param gamma the psychrometric coefficient
+#' 
+#' @return the dew point temperature
+#' 
+#' @export
+calculate_Tdp <- function(T_d, T_w, method_for_dew, method_for_p, gamma = NULL) {
+
+  if (is.null(method_for_dew)) {
+    stop("The method for calculating the dew point must be either \"universal from humidity ratio\", \"universal from pressure\", \"with psychrometer\" or \"without psychrometer\". The current method isn't set.")
+  } else if (is.null(method_for_p)) {
+    stop("The method must be either \"ASHRAE\" or \"FAO\". The method is currently not set.")
+  } else if ("universal from humidity ratio" == method_for_dew) {
+    W <- calculate_W(T_d, T_w, method = method_for_p)
+    p_w <- calculate_P_from_W(W) / 1e3
+    print(p_w)
+    alpha <- log(p_w)
+    T_dew <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+  } else if ("universal from pressure" == method_for_dew) {
+    p_sat <- calculate_p_sat(T_w, method = method_for_p)
+    
+    if (is.null(gamma)) {
+      gamma <- calculate_gamma(p_at)
+    }
+
+    p_w <- calculate_p_a(p_sat, gamma, T_d, T_w) / 1e3
+    print(p_w)
+    alpha <- log(p_w)
+    T_dew <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+  } else if ("with psychrometer" == method_for_dew) {
+    # gamma <- calculate_gamma(p_at, type_of_psychrometer = type_of_psychrometer)
+    
+    if (is.null(gamma)) {
+      gamma <- calculate_gamma(p_at)
+    }
+    
+    p_sat_at_T_w <- calculate_p_sat(T_w, method = method_for_p)
+    T_dew <- (112 + .9*(T_w - T_0)) * (calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) / p_sat_at_T_w)^(1/8) - 112 + .1 * (T_w - T_0)
+  } else if ("without psychrometer" == method_for_dew) {
+    # gamma <- calculate_gamma(p_at, type_of_psychrometer = type_of_psychrometer)
+    
+    if (is.null(gamma)) {
+      gamma <- calculate_gamma(p_at)
+    }
+
+    p_sat_at_T_w <- calculate_p_sat(T_w, method = method_for_p)
+    log_of_p_a <- log(calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) * 1e-3)
+    T_dew <- (116.91 + 237.3 * log_of_p_a) / (16.78 - log_of_p_a)
+  } else {
+    stop(paste("The method for calculating the dew point must be either \"universal from humidity ratio\", \"universal from pressure\", \"with psychrometer\" or \"without psychrometer\". The current method is", method_for_dew, "."))
+  }
+
+  return(signif(T_dew + T_0, digits = 5))
+}
+
+calculate_trash <- function(T_d, T_w) {
+  gamma <- calculate_gamma(p_at)
+  p_sat_at_T_w <- calculate_p_sat(T_w, method = "ASHRAE")
+  return((112 + .9 * (T_w - T_0)) * (calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) / p_sat_at_T_w)^(1 / 8) - 112 + .1 * (T_w - T_0))
+}
+
+calculate_more_trash <- function(T_d, T_w) {
+  gamma <- calculate_gamma(p_at)
+  p_sat_at_T_w <- calculate_p_sat(T_w, method = "FAO")
+  return((116.91 + 237.3 * log(calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) * 1e-3)) / (16.78 - log(calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) * 1e-3)))
+}
+
+calculate_some_trash <- function(T_d, T_w) {
+  W <- calculate_W(T_d, T_w, method = "ASHRAE")
+  p_w <- calculate_P_from_W(W) / 1e3
+  print(p_w)
+  p_sat <- calculate_p_sat(T_d, method = "FAO")
+  print(p_sat)
+  p_w <- calculate_p_a(p_sat, calculate_gamma(p_at), T_d, T_w) / 1e3
+  print(p_w)
+  alpha <- log(p_w)
+  T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
+  return(T_dp)
+}
+
+```
 
 ```{r label = "t-dp"}
 T_1 <- GetTKelvinFromTCelsius(93)
@@ -1384,13 +1451,31 @@ Kastepunkti valem kehtib vahemikus $\qty{`r T_0`}{\kelvin}$ kuni $\qty{`r T_1`}{
 
 ```{=tex}
 \begin{align}
-T_\text{dp} :&= (6.54 + 14.526 \times ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}) + .7389 \times (ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^2 + .09486 \times (ln(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^3\\
+T_\text{dew} :&= (6.54 + 14.526 \times \text{ln}(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}) + .7389 \times (\text{ln}(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^2 + .09486 \times (\text{ln}(\frac{p_\text{w}}{10^3 \times \unit{\pascal}}))^3\\
 &+ .4569 \times \frac{p_\text{w}}{10^3 \times \unit{\pascal}}^{.1984} + 273.15) \times \unit{\kelvin}
 (\#eq:dew-point-temperature)
 \end{align}
 ``` 
 
 [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, p. 16].
+
+@inbook, p. 226 esitatakse kastepunkti arvutamiseks kaks valemit. Üks valem on üldine ja olukorra kohta, milles ei mõõdeta temperatuuri:
+
+```{=tex}
+\begin{align}
+T_\text{dew} := (\frac{116.91 + 237.3 \times \text{ln}(\frac{p_\text{a} \times 10^3}{\unit{\pascal}})}{16.78 - \text{ln}(\frac{p_\text{a} \times 10^3}{\unit{\pascal}})} + \qty{`r T_0`}) \times \unit{\kelvin}.
+(\#eq:dew-point-temperature-inbook-without-observation)
+\end{align}
+``` 
+
+Teine valem on kasutatav koos psühromeetriga:
+
+```{=tex}
+\begin{align}
+T_\text{dew} := (\qty{112}{\kelvin} + 0.9 \times T_\text{w}) \times (frac{p_\text{a}}{p_\text{sat}(T_\text{w})})^\frac{1}{8} - \qty{112}{\kelvin} + 0.1 \times T_\text{w} + \qty{`r T_0`}{\kelvin}.
+(\#eq:dew-point-temperature-inbook-with-psychrometer)
+\end{align}
+``` 
 
 Kim Wilde on võrrelnud meenutust kastepunktiga laulus *Water On Glass* [@kim].
 
