@@ -180,6 +180,9 @@ print_table(
 (ref:relative-humidity-as-ratio-of-pressure) \@ref(eq:relative-humidity-as-ratio-of-pressure)
 (ref:dew-point-temperature) \@ref(eq:dew-point-temperature)
 (ref:dew-point-temperature-inbook-with-psychrometer) \@ref(eq:dew-point-temperature-inbook-with-psychrometer)
+(ref:rh-in-instructions) \@ref(eq:rh-in-instructions)
+(ref:a) \@ref(eq:a)
+(ref:density-of-saturated-h2o) \@ref(eq:density-of-saturated-h2o)
 
 Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
 
@@ -216,6 +219,8 @@ RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPAR
 RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_ASHRAE, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
 RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_ASHRAE)
 RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
+RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "ASHRAE"), T_d)
+RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "FAO"), T_d)
 
 T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
 T_dew_FOR_COMPARISON_FROM_W_WITH_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "FAO")
@@ -251,7 +256,6 @@ T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[1] <- paste(T_dew_FOR_COMPA
 T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2], footnote_6)
 T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3], footnote_6_8)
 
-# RH_FOR_COMPARISON_OF_MANUAL <- a * 1e-3 / calculate_gamma_H2O(calculate_p_H2O(T_d), T_d)
 # T_dew_FOR_COMPARISON_FROM_W <- calculate_Tdp(T_d, T_w, "universal from humidity ratio")
 # T_dew_FOR_COMPARISON_FROM_ASHRAE <- calculate_Tdp(T_d, T_w, "universal from ASHRAE")
 # T_dew_FOR_COMPARISON_FROM_FAO <- calculate_Tdp(T_d, T_w, "universal from FAO")
@@ -291,6 +295,8 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   RH_FOR_COMPARISON_FROM_W_WITH_ASHRAE_p_sat_FAO,
   RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_ASHRAE,
   RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO,
+  RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE,
+  RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO,
   T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE,
   T_dew_FOR_COMPARISON_FROM_W_WITH_FAO,
   T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
@@ -301,14 +307,6 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE,
   T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO,
   T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO
-  # RH_FOR_COMPARISON,
-  # RH_FOR_COMPARISON_OF_inbook,
-  # RH_FOR_COMPARISON_OF_whipple,
-  # RH_FOR_COMPARISON_OF_MANUAL,
-  # T_dew_FOR_COMPARISON_FROM_W,
-  # T_dew_FOR_COMPARISON_FROM_ASHRAE,
-  # T_dew_FOR_COMPARISON_FROM_FAO,
-  # T_dew_FOR_COMPARISON_REGARDING_TO_PSYCHROMETER
 )
 
 DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
@@ -323,6 +321,8 @@ footnote_10 <- footnote_marker_number(10)
 footnote_11 <- footnote_marker_number(11)
 footnote_12 <- footnote_marker_number(12)
 footnote_13 <- footnote_marker_number(13)
+footnote_14 <- footnote_marker_number(14)
+footnote_15 <- footnote_marker_number(15)
 footnote_1_2 <- paste(footnote_1, footnote_2)
 footnote_1_3 <- paste(footnote_1, footnote_3)
 footnote_1_4 <- paste(footnote_1, footnote_4)
@@ -336,6 +336,7 @@ footnote_1_2_3 <- paste(footnote_1_2, footnote_3)
 footnote_1_2_4 <- paste(footnote_1_2, footnote_4)
 footnote_1_4_5 <- paste(footnote_1_4, footnote_5)
 footnote_2_4_5 <- paste(footnote_2_4, footnote_5)
+footnote_13_14_15 <- paste(footnote_13, footnote_14, footnote_15)
 footnote_1_2_4_10 <- paste(footnote_1_2_4, footnote_10)
 footnote_1_2_3_9_10 <- paste(footnote_1_2_3, footnote_9_10)
 
@@ -370,7 +371,8 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$RH$", footnote_1_2_3_9_10),
   paste("$RH$", footnote_1_2_3_9_10),
   paste("$RH$", footnote_2_3, footnote_9_10),
-  # paste("$RH$", footnote_marker_number(4)),
+  paste("$RH$", footnote_1_4, footnote_13_14_15),
+  paste("$RH$", footnote_2_4, footnote_13_14_15),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_4, footnote_11),
@@ -403,18 +405,21 @@ print_table(
   digits = 3
 ) %>%
   footnote(number = c(
-    "valem (ref:saturation-pressure-over-liquid-h2o)",
-    "valem (ref:saturation-pressure-in-inbook)",
-    "valem (ref:humidity-ratio-using-enthalpies)",
-    "valem (ref:actual-vapor-pressure)",
-    "valem (ref:psychrometric-coefficient-in-whipple)",
-    "valem (ref:psychrometric-coefficient)",
-    "valem (ref:psychrometric-coefficient-for-natural-ventilation)",
-    "Katseliselt leidsin, et Pasco ilmajaamas kasutatakse tõenäoliselt Assmanni psühromeetri reeglistikku.",
-    "valem (ref:partial-vapor-pressure-from-humidity-ratio)",
-    "valem (ref:relative-humidity-as-ratio-of-pressure)",
-    "valem (ref:dew-point-temperature)",
-    "valem (ref:dew-point-temperature-inbook-with-psychrometer)"
+    "valem (ref:saturation-pressure-over-liquid-h2o)", # 1
+    "valem (ref:saturation-pressure-in-inbook)", # 2
+    "valem (ref:humidity-ratio-using-enthalpies)", # 3
+    "valem (ref:actual-vapor-pressure)", # 4
+    "valem (ref:psychrometric-coefficient-in-whipple)", # 5
+    "valem (ref:psychrometric-coefficient)", # 6
+    "valem (ref:psychrometric-coefficient-for-natural-ventilation)", # 7
+    "Katseliselt leidsin, et Pasco ilmajaamas kasutatakse tõenäoliselt Assmanni psühromeetri reeglistikku.", # 8
+    "valem (ref:partial-vapor-pressure-from-humidity-ratio)", # 9
+    "valem (ref:relative-humidity-as-ratio-of-pressure)", # 10
+    "valem (ref:dew-point-temperature)", # 11
+    "valem (ref:dew-point-temperature-inbook-with-psychrometer)", # 12
+    "valem (ref:rh-in-instructions)", # 13
+    "valem (ref:a)", # 14
+    "valem (ref:density-of-saturated-h2o)" # 15
   ))
 
 # a_FOR_COMPARISON <- 
