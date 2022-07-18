@@ -1472,7 +1472,7 @@ Teine valem on kasutatav koos psühromeetriga:
 
 ```{=tex}
 \begin{align}
-T_\text{dew} := (\qty{112}{\kelvin} + 0.9 \times T_\text{w}) \times (frac{p_\text{a}}{p_\text{sat}(T_\text{w})})^\frac{1}{8} - \qty{112}{\kelvin} + 0.1 \times T_\text{w} + \qty{`r T_0`}{\kelvin}.
+T_\text{dew} := (\qty{112}{\kelvin} + 0.9 \times T_\text{w}) \times (\frac{p_\text{a}}{p_\text{sat}(T_\text{w})})^\frac{1}{8} - \qty{112}{\kelvin} + 0.1 \times T_\text{w} + \qty{`r T_0`}{\kelvin}.
 (\#eq:dew-point-temperature-inbook-with-psychrometer)
 \end{align}
 ``` 

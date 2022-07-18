@@ -221,6 +221,7 @@ RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_ASHRAE <- calculate_RH(p_a_FOR_COMPARISO
 RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_FROM_W_WITH_FAO, p_sat_at_T_d_FOR_COMPARISON_WITH_FAO)
 RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "ASHRAE"), T_d)
 RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "FAO"), T_d)
+RH_FOR_COMPARISON_OF_MANUAL_FROM_TABLE <- c("43 kuni 49", "31 kuni 38", "29 kuni 36")
 
 T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
 T_dew_FOR_COMPARISON_FROM_W_WITH_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "FAO")
@@ -232,6 +233,9 @@ T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_
 T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "ASHRAE")
 T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "FAO", gamma_FOR_COMPARISON)
 T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "FAO")
+gamma_FOR_COMPARISON_ON_MANUAL_WITH_ASHRAE <- RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE * gamma_d
+gamma_FOR_COMPARISON_ON_MANUAL_WITH_FAO <- RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO * calculate_gamma_H2O(calculate_p_sat(T_d, method = "FAO"), T_d)
+T_dew_FOR_COMPARISON_ON_MANUAL <- c(paste("\\qty{", GetTKelvinFromTCelsius(9), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(10), "}{\\kelvin}"), paste("\\qty{", GetTKelvinFromTCelsius(5), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(6), "}{\\kelvin}"), paste("\\qty{", GetTKelvinFromTCelsius(6), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(7), "}{\\kelvin}"))
 
 footnote_6 <- footnote_marker_number(6)
 footnote_7 <- footnote_marker_number(7)
@@ -256,11 +260,6 @@ T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[1] <- paste(T_dew_FOR_COMPA
 T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[2], footnote_6)
 T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3] <- paste(T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO[3], footnote_6_8)
 
-# T_dew_FOR_COMPARISON_FROM_W <- calculate_Tdp(T_d, T_w, "universal from humidity ratio")
-# T_dew_FOR_COMPARISON_FROM_ASHRAE <- calculate_Tdp(T_d, T_w, "universal from ASHRAE")
-# T_dew_FOR_COMPARISON_FROM_FAO <- calculate_Tdp(T_d, T_w, "universal from FAO")
-# T_dew_WITH_PSYCHROMETER <- calculate_Tdp(T_d[1:2], T_w[1:2], "with psychrometer")
-# T_dew_FOR_COMPARISON_REGARDING_TO_PSYCHROMETER <- c(T_dew_WITH_PSYCHROMETER, calculate_Tdp(T_d[3], T_w[3], "without psychrometer"))
 librarian::shelf("MeTo")
 gamma_MeTo <- psyc_cons(elev = 10)
 
@@ -297,6 +296,7 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO,
   RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE,
   RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO,
+  RH_FOR_COMPARISON_OF_MANUAL_FROM_TABLE,
   T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE,
   T_dew_FOR_COMPARISON_FROM_W_WITH_FAO,
   T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
@@ -306,7 +306,10 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
   T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_ASHRAE,
   T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO,
-  T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO
+  T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO,
+  gamma_FOR_COMPARISON_ON_MANUAL_WITH_ASHRAE,
+  gamma_FOR_COMPARISON_ON_MANUAL_WITH_FAO,
+  T_dew_FOR_COMPARISON_ON_MANUAL
 )
 
 DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
@@ -332,6 +335,7 @@ footnote_5_10 <- paste(footnote_5, footnote_10)
 footnote_5_12 <- paste(footnote_5, footnote_12)
 footnote_9_10 <- paste(footnote_9, footnote_10)
 footnote_9_11 <- paste(footnote_9, footnote_11)
+footnote_13_15 <- paste(footnote_13, footnote_15)
 footnote_1_2_3 <- paste(footnote_1_2, footnote_3)
 footnote_1_2_4 <- paste(footnote_1_2, footnote_4)
 footnote_1_4_5 <- paste(footnote_1_4, footnote_5)
@@ -373,6 +377,7 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$RH$", footnote_2_3, footnote_9_10),
   paste("$RH$", footnote_1_4, footnote_13_14_15),
   paste("$RH$", footnote_2_4, footnote_13_14_15),
+  paste("$\\frac{RH}{\\unit{\\percent}}$"),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_4, footnote_11),
@@ -382,7 +387,10 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1, footnote_12),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1, footnote_5_12),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_12),
-  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_5_12)
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_5_12),
+  paste("$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$", footnote_1, footnote_13_15),
+  paste("$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$", footnote_2, footnote_13_15),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_marker_number(16))
 )
 
 colnames(DATA_FRAME_OF_COMPARISON) <- c(
@@ -419,7 +427,8 @@ print_table(
     "valem (ref:dew-point-temperature-inbook-with-psychrometer)", # 12
     "valem (ref:rh-in-instructions)", # 13
     "valem (ref:a)", # 14
-    "valem (ref:density-of-saturated-h2o)" # 15
+    "valem (ref:density-of-saturated-h2o)", # 15
+    "juhendi tabel 5.1" # 16
   ))
 
 # a_FOR_COMPARISON <- 
