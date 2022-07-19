@@ -162,12 +162,7 @@ print_table(
 
 ```
 
-<!-- # juhendi valem -->
-<!-- # juhendi niiskuste tabel -->
-<!-- # psychrolib -->
-<!-- # meto -->
 <!-- # chart -->
-<!-- # r ehk minu -->
 
 (ref:saturation-pressure-over-liquid-h2o) \@ref(eq:saturation-pressure-over-liquid-h2o)
 (ref:saturation-pressure-in-inbook) \@ref(eq:saturation-pressure-in-inbook)
@@ -183,6 +178,8 @@ print_table(
 (ref:rh-in-instructions) \@ref(eq:rh-in-instructions)
 (ref:a) \@ref(eq:a)
 (ref:density-of-saturated-h2o) \@ref(eq:density-of-saturated-h2o)
+(ref:psychrolibsrcrr) [@psychrolibsrcrr]
+(ref:psychrometric-diagram) \@ref(fig:psychrometric-diagram)
 
 Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
 
@@ -222,6 +219,8 @@ RH_FOR_COMPARISON_FROM_W_WITH_FAO_p_sat_FAO <- calculate_RH(p_a_FOR_COMPARISON_F
 RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "ASHRAE"), T_d)
 RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO <- a * 1e-3 / calculate_gamma_H2O(calculate_p_sat(T_d, method = "FAO"), T_d)
 RH_FOR_COMPARISON_OF_MANUAL_FROM_TABLE <- c("43 kuni 49", "31 kuni 38", "29 kuni 36")
+RH_WITH_psychrolib <- GetRelHumFromTWetBulb(t_d, t_w, p_at)
+RH_WITH_chart <- c("40 kuni 50", "30 kuni 40", "30")
 
 T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
 T_dew_FOR_COMPARISON_FROM_W_WITH_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "FAO")
@@ -235,7 +234,10 @@ T_dew_FOR_COMPARISON_WITH_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, 
 T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO <- calculate_Tdp(T_d, T_w, method_for_dew = "with psychrometer", method_for_p = "FAO")
 gamma_FOR_COMPARISON_ON_MANUAL_WITH_ASHRAE <- RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE * gamma_d
 gamma_FOR_COMPARISON_ON_MANUAL_WITH_FAO <- RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO * calculate_gamma_H2O(calculate_p_sat(T_d, method = "FAO"), T_d)
-T_dew_FOR_COMPARISON_ON_MANUAL <- c(paste("\\qty{", GetTKelvinFromTCelsius(9), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(10), "}{\\kelvin}"), paste("\\qty{", GetTKelvinFromTCelsius(5), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(6), "}{\\kelvin}"), paste("\\qty{", GetTKelvinFromTCelsius(6), "}{\\kelvin} kuni \\qty{", GetTKelvinFromTCelsius(7), "}{\\kelvin}"))
+T_dew_FOR_COMPARISON_ON_MANUAL <- c(paste(GetTKelvinFromTCelsius(9), "kuni", GetTKelvinFromTCelsius(10)), paste(GetTKelvinFromTCelsius(5), "kuni", GetTKelvinFromTCelsius(6)), paste(GetTKelvinFromTCelsius(6), "kuni", GetTKelvinFromTCelsius(7)))
+T_dew_FOR_COMPARISON_WITH_psychrolib <- signif(GetTDewPointFromTWetBulb(t_d, t_w, p_at) + T_0, digits = 3)
+FROM_C_TO_K_9 <- GetTKelvinFromTCelsius(9)
+T_dew_FOR_COMPARISON_WITH_chart <- c(paste(GetTKelvinFromTCelsius(11), "kuni", GetTKelvinFromTCelsius(12)), FROM_C_TO_K_9, paste(GetTKelvinFromTCelsius(8), "kuni", FROM_C_TO_K_9))
 
 footnote_6 <- footnote_marker_number(6)
 footnote_7 <- footnote_marker_number(7)
@@ -297,6 +299,8 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   RH_FOR_COMPARISON_OF_MANUAL_WITH_ASHRAE,
   RH_FOR_COMPARISON_OF_MANUAL_WITH_FAO,
   RH_FOR_COMPARISON_OF_MANUAL_FROM_TABLE,
+  RH_WITH_psychrolib,
+  RH_WITH_chart,
   T_dew_FOR_COMPARISON_FROM_W_WITH_ASHRAE,
   T_dew_FOR_COMPARISON_FROM_W_WITH_FAO,
   T_dew_FOR_COMPARISON_FROM_PRESSURE_WITH_TYPED_PSYCHROMETER_AND_ASHRAE,
@@ -309,7 +313,9 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   T_dew_FOR_COMPARISON_WITH_NON_TYPED_PSYCHROMETER_AND_FAO,
   gamma_FOR_COMPARISON_ON_MANUAL_WITH_ASHRAE,
   gamma_FOR_COMPARISON_ON_MANUAL_WITH_FAO,
-  T_dew_FOR_COMPARISON_ON_MANUAL
+  T_dew_FOR_COMPARISON_ON_MANUAL,
+  T_dew_FOR_COMPARISON_WITH_psychrolib,
+  T_dew_FOR_COMPARISON_WITH_chart
 )
 
 DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
@@ -326,6 +332,7 @@ footnote_12 <- footnote_marker_number(12)
 footnote_13 <- footnote_marker_number(13)
 footnote_14 <- footnote_marker_number(14)
 footnote_15 <- footnote_marker_number(15)
+footnote_18 <- footnote_marker_number(18)
 footnote_1_2 <- paste(footnote_1, footnote_2)
 footnote_1_3 <- paste(footnote_1, footnote_3)
 footnote_1_4 <- paste(footnote_1, footnote_4)
@@ -378,6 +385,8 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$RH$", footnote_1_4, footnote_13_14_15),
   paste("$RH$", footnote_2_4, footnote_13_14_15),
   paste("$\\frac{RH}{\\unit{\\percent}}$"),
+  paste("$RH$", footnote_marker_number(17)),
+  paste("$\\frac{RH}{\\unit{\\percent}}$", footnote_18),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2_3, footnote_9_11),
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_1_4, footnote_11),
@@ -390,7 +399,9 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_2, footnote_5_12),
   paste("$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$", footnote_1, footnote_13_15),
   paste("$\\frac{\\gamma_\\text{d}}{\\unit{\\kilogram\\per\\cubic\\meter}}$", footnote_2, footnote_13_15),
-  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_marker_number(16))
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_marker_number(16)),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_marker_number(17)),
+  paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_18)
 )
 
 colnames(DATA_FRAME_OF_COMPARISON) <- c(
@@ -428,24 +439,16 @@ print_table(
     "valem (ref:rh-in-instructions)", # 13
     "valem (ref:a)", # 14
     "valem (ref:density-of-saturated-h2o)", # 15
-    "juhendi tabel 5.1" # 16
+    "juhendi tabel 5.1", # 16
+    "(ref:psychrolibsrcrr)", # 17
+    "joonis (ref:psychrometric-diagram)" # 18
   ))
 
-# a_FOR_COMPARISON <- 
 ```
 
-[@a2022_cranmeto]
-
 ```{r}
-A_1 <- 13.6+(17-16)/2*(14.5-13.6)
-A_1
-a <- A_1-.64*(24-16.5)
-a
-A <- 22.2
-RH <- A_1 / A
-RH
-RH <- a / A
-RH
+library("MeTo")
+psyc_cons(2)
 ```
 
 

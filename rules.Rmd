@@ -621,7 +621,7 @@ calculate_gamma <- function(P, type_of_psychrometer = NULL) {
 \end{align}
 ```
 
-milles $c_p$ on õhu erisoojus, $\lambda$ on vee aurustumissoojus [@haynes_2014_crc, pp. 1-25, 6-5, 6-17], [@Goodfellow2001-ce, p. 1470], [@inbook, pp. 32 to 33]. Kuigi [@inbook, p. 33] kasutatakse nii õhu erisoojust kui vee aurustumissoojust mingite muude temperatuuride kui standardtemperatuuri korral, mina kasutan neid standardtemperatuuri korral, et oleks ühtne süsteem. Sellest johtuvalt on minu psühhomeetriline tegur [@inbook] omast erinev. Dimensionaalanalüüs:
+milles $c_p$ on õhu erisoojus, $\lambda$ on vee aurustumissoojus [@haynes_2014_crc, pp. 1-25, 6-5, 6-17], [@Goodfellow2001-ce, p. 1470], [@inbook, pp. 32 to 33]. Kuigi [@inbook, p. 33] kasutatakse nii õhu erisoojust kui vee aurustumissoojust mingite muude temperatuuride kui standardtemperatuuri korral, mina kasutan neid standardtemperatuuri korral, et oleks ühtne süsteem. Sellest johtuvalt on minu psühhomeetriline tegur [@inbook] omast erinev. Ühtlasi väärib mainimist, et [@a2022_cranmeto] on implementeeritud [@inbook, p. 33] teisend. Dimensionaalanalüüs:
 
 ```{=tex}
 \begin{align}
@@ -1133,8 +1133,9 @@ a := \gamma_\text{w} \cdot 10^3 - \qty{0.64}{\kilogram\per\cubic\meter\per\kelvi
 Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt diagrammilt \@ref(fig:psychrometric-diagram) vaadata õhuniiskuse, sest eri temperatuuril on õhu võime endasse veeauru mahutada erinev ja need väärtused on katseliselt välja arvutatud.
 
 (ref:psychrometric-chart) @psychrometric-chart
+(ref:ASHRAE) @American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, pp. 17 to 18
 
-```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)), mille lugemist selgitatakse (ref:ASHRAE).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 
