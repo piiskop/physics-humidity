@@ -13,6 +13,7 @@ rmd_files: [
   "theory.Rmd",
   "practice.Rmd",
   "data-analysis.Rmd",
+  "conclusions.Rmd",
   "99-references.Rmd"
 ]
 download: [

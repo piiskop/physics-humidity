@@ -22,4 +22,4 @@ Selleks, et arvutada suhtelist õhuniiskust, on vaja teada kas rõhke või masse
 
 2. tegeliku rõhu arvutamine kuiva ja märja kolviga termomeetri temperatuuride, atmosfäärirõhu ja psühromeetri tüübi järgi kasutades valemit \@ref(eq:actual-vapor-pressure),
 
-3. suhtelise niiskuse arvutamine kasutades tegelikku ja küllastusrõhku.
+3. suhtelise niiskuse arvutamine kasutades tegelikku ja küllastusrõhku, nagu esitatud valemis \@ref(eq:relative-humidity-as-ratio-of-pressure).

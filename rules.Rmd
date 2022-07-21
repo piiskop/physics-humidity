@@ -1135,7 +1135,7 @@ Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt di
 (ref:psychrometric-chart) @psychrometric-chart
 (ref:ASHRAE) @American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, pp. 17 to 18
 
-```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)), mille lugemist selgitatakse (ref:ASHRAE).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.96\\textheight'}
+```{r label = "psychrometric-diagram", fig.cap = "Psühromeetriline diagramm ((ref:psychrometric-chart)), mille lugemist selgitatakse (ref:ASHRAE).", fig.margin = TRUE, out.extra = 'angle=270', out.width = '.92\\textheight'}
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 

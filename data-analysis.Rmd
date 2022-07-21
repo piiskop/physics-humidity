@@ -13,7 +13,7 @@ niiskuse
 karakteristikud"
 )
 
-t_d <- c(24, 24.6, 26.3)
+t_d <- c(24, 23.6, 26.3)
 SetUnitSystem("SI")
 T_d <- GetTKelvinFromTCelsius(t_d)
 RH_Pasco <- 30.8e-2
@@ -134,12 +134,12 @@ Teen nüüd kogu andmeanalüüsi juhendi järgi kasutades ainult psühromeetreid
 
 ```{r label = "manual"}
 device <- c("Augusti", "Assmanni")
-t_manual <- c(24, 24.6)
+t_manual <- t_d[1:2]
 t_1_manual <- c(16.5, 15.2)
 t_dp_MANUAL <- c(9, 6 + (7.8 - 7.4) * (7 - 6))
 A_1_manual <- c(mean(13.6, 14.5), 12.8 + (16 - 15.2) * (13.6 - 12.8))
 a_manual <- A_1_manual - .64 * (t_manual - t_1_manual)
-A_manual <- c(22.2, 24.6 + (25 - 24.6) * (23.5 - 22.2))
+A_manual <- c(22.2, t_d[2] + (25 - t_d[2]) * (23.5 - 22.2))
 R_manual <- a_manual / A_manual * 100
 data_frame_manual <- data.frame(device, t_manual, t_1_manual, t_dp_MANUAL, A_1_manual, a_manual, A_manual, R_manual)
 
@@ -181,12 +181,14 @@ print_table(
 (ref:psychrolibsrcrr) [@psychrolibsrcrr]
 (ref:psychrometric-diagram) \@ref(fig:psychrometric-diagram)
 
-Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga absoluutse õhuniiskuse, suhtelise õhuniiskuse ja kastepunkti 
+Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga mõõdetud ja nende põhjal arvutatud väärtused, et neid omavahel võrrelda. 
 
 ```{r label = "comparison-of-pressure"}
 DEVICES_FOR_COMPARISON <- c("Augusti psühromeeter", "Assmanni psühromeeter", "Pasco ilmajaam")
 
-gamma_FOR_COMPARISON <- c(calculate_gamma(p_at, "natural ventilated"), calculate_gamma(p_at, "ventilated"), calculate_gamma(p_at, "ventilated"))
+gamma_natural_ventilated <- calculate_gamma(p_at, "natural ventilated")
+gamma_ventilated <- calculate_gamma(p_at, "ventilated")
+gamma_FOR_COMPARISON <- c(gamma_natural_ventilated, gamma_ventilated, gamma_ventilated)
 
 p_sat_at_T_w_FOR_COMPARISON_WITH_ASHRAE <- calculate_p_sat(T_w, method = "ASHRAE")
 p_sat_at_T_w_FOR_COMPARISON_WITH_FAO <- calculate_p_sat(T_w, method = "FAO")
@@ -446,60 +448,4 @@ print_table(
 
 ```
 
-```{r}
-library("MeTo")
-psyc_cons(2)
-```
-
-
-Tabelis on esitatud erinevused minu arvutuste
-
-```{r}
-t_d <- c(24, 24.6)
-library("psychrolib")
-SetUnitSystem("SI")
-T_d <- GetTKelvinFromTCelsius(t_d)
-t_w <- c(16.5, 15.2)
-T_w <- GetTKelvinFromTCelsius(t_w)
-GetSatHumRatio(t_w, 101325)
-W <- GetHumRatioFromTWetBulb(t_d, t_w, 101325)
-GetVapPresFromHumRatio(W, 101325)
-GetSatVapPres(t_d)
-GetRelHumFromTWetBulb(t_d, t_w, 101325)
-GetTDewPointFromTWetBulb(t_d, t_w, 101325)
-1.013e-3/(.622 * 2.45)
-1.006/(.622 * 2500.9)
-.5/755
-.46/(1+(1-.46)*0.01174108/.622)
-#e_0_T_w <- .611 * exp(17.27 * T_w / T_w + 237.3)
-#(112 + .9 * T_w) * (e_a / e_0_T_w)^(1 / 8) - 112 + .1 * T_w
-```
-
-```{r}
-t_d <- 24#30
-t_w <- 16.5#20
-T_d <- GetTKelvinFromTCelsius(t_d)
-T_w <- GetTKelvinFromTCelsius(t_w)
-T_w
-RHS <- -5.8002206e3 * T_w^-1 + 1.3914993 * T_w^0 - 4.8640239e-2 * T_w^1 + 4.1764768e-5 * T_w^2 - 1.4452093e-8 * T_w^3 + 6.5459673 *   log(T_w)
-RHS
-p_ws <- exp(RHS)
-p_ws
-W_sat <- .6219495 * p_ws / (101325 - p_ws)
-W_sat
-W <- (1.006 * (T_w - T_d) + W_sat * (2501 - 2.381 * t_w)) / (2501 + 1.805 * t_d - 4.186 * t_w)
-W
-
-p_w <- 101325 * W / (0.621945 + W)
-p_w
-alpha <- log(p_w*1e-3)
-T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * (p_w*1e-3)^.1984+273.15
-T_dp
-```
-```{r}
-psyc_cons(elev = 2)
-
-```
-
-
-6-1 vesi6-17 õhu cp
+*Pasco* ilmajaama puhul tegin katseliselt kindlaks, et kasutatakse Assmanni psühhomeetriakoefitsienti, sest loomuliku ventilatsiooni puhul vastavalt valemile \@ref(eq:psychrometric-coefficient-for-natural-ventilation) ja ventilatsioonita olukorras vastavalt valemile \@ref(eq:psychrometric-coefficient-without-ventilation) olnuks tegelik veeauru osarõhk sundventilatsiooniga osarõhust liiga erinev.
