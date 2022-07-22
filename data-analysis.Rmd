@@ -1,6 +1,6 @@
 # Andmeanalüüs
 
-Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram).
+Arvutustes kasutan rõhuna standardset atmosfääri, et tulemused oleksid võrreldavad graafikuga \@ref(fig:psychrometric-diagram) leheküljel $\pageref{fig:psychrometric-diagram}$.
 
 ```{r label = "data-analysis"}
 method <- c(
@@ -67,36 +67,12 @@ print_table(
   caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed, milles $w$ tähendab märga ja $d$ kuiva keskkonda ning $dp$ kastepunkti.",
   digits = 5
 ) %>%
+  row_spec(1, color = "red") %>%
+  row_spec(2, color = "teal") %>%
   column_spec(1, width = "6em") %>%
   column_spec(11, width = "5em") %>%
   column_spec(12, width = "5em") %>%
   landscape()
-
-librarian::shelf("psychrolib")
-# psychometrics <- CalcPsychrometricsFromTWetBulb(t, t1, p_at)
-# print(psychometrics)
-# GetDegreeOfSaturation(t, psychometrics$HumRatio, p_at)
-# print(t)
-# GetDryAirVolume(t, p_at)
-# GetMoistAirDensity(t, psychometrics$HumRatio, p_at)
-# GetMoistAirVolume(t, psychometrics$HumRatio, p_at)
-# GetSatVapPres(t)
-# GetStandardAtmPressure(10)
-# GetStationPressure(p_at, 10, t)
-# GetVaporPressureDeficit(t, psychometrics$HumRatio, p_at)
-# GetVapPresFromHumRatio(psychometrics$HumRatio, p_at)
-# > 1/69.006*1000-.64*(24-16.5)
-# [1] 9.691493
-# > 9.691493/(1/45.863*1000)
-# [1] 0.4444809
-# > .5/755*1013.25
-# [1] 0.6710265
-# > -5.8002206e3/(24+273.15) + 1.3914993e0 - 4.8640239e-2*(24+273.15) + 4.1764768e-5*(24+273.15)^2 - 1.4452093e-8*(24+273.15)^3 + 6.5459673e0*log((24+273.15))
-# [1] 8.001398
-# > exp(1)^8.001398
-# [1] 2985.128
-# > 2985.128*.018/8.314472/(24+273.15)
-# [1] 0.02174829
 
 ```
 
@@ -116,21 +92,12 @@ Katseliselt mõõtsime kastepunktiks $\qty{`r t_dp_r`}{\degreeCelsius}$ ehk  $\q
 ```{r label = "own-calculations"}
 T_dp <- calculate_Tdp(T_d, T_w, method_for_dew = "universal from humidity ratio", method_for_p = "ASHRAE")
 ```
-```{r}
-trash <- calculate_trash(T_d, T_w)
-print(trash)
-more_trash <- calculate_more_trash(T_d, T_w)
-print(more_trash)
-some_trash <- calculate_some_trash(T_d, T_w)
-print(some_trash)
 
-```
+\textcolor{red}{Augusti psühhomeetriga} mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[1]`}{\kelvin}$.
 
-Augusti psühhomeetriga mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[1]`}{\kelvin}$. Tabeli järgi 
+\textcolor{teal}{Assmanni psühhomeetriga} mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[2]`}{\kelvin}$.
 
-Assmanni psühhomeetriga mõõdetud temperatuuride järgi oli kastepunkt minu arvutuste kohaselt $\qty{`r T_dp[2]`}{\kelvin}$.
-
-Teen nüüd kogu andmeanalüüsi juhendi järgi kasutades ainult psühromeetreid kandes tulemused tabelisse \@ref(tab:manual).
+Teen nüüd kogu andmeanalüüsi juhendi järgi kasutades ainult psühromeetreid kandes tulemused tabelisse \@ref(tab:manual) leheküljel $\pageref{tab:manual}$.
 
 ```{r label = "manual"}
 device <- c("Augusti", "Assmanni")
@@ -158,11 +125,11 @@ print_table(
   data_frame_manual,
   caption = "Suhtelise niiskuse arvutamise sisend- ja väljundandmed vastavalt juhendile, milles $1$ tähendab märga keskkonda.",
   digits = 3
-)
+) %>%
+  row_spec(1, color = "red") %>%
+  row_spec(2, color = "teal")
 
 ```
-
-<!-- # chart -->
 
 (ref:saturation-pressure-over-liquid-h2o) \@ref(eq:saturation-pressure-over-liquid-h2o)
 (ref:saturation-pressure-in-inbook) \@ref(eq:saturation-pressure-in-inbook)
@@ -178,14 +145,12 @@ print_table(
 (ref:rh-in-instructions) \@ref(eq:rh-in-instructions)
 (ref:a) \@ref(eq:a)
 (ref:density-of-saturated-h2o) \@ref(eq:density-of-saturated-h2o)
-(ref:psychrolibsrcrr) [@psychrolibsrcrr]
+(ref:psychrolibsrcrr) @psychrolibsrcrr
 (ref:psychrometric-diagram) \@ref(fig:psychrometric-diagram)
 
 Viimaks koondan tabelisse \@ref(tab:comparison-of-pressure) kolme mõõtmisvahendiga mõõdetud ja nende põhjal arvutatud väärtused, et neid omavahel võrrelda. 
 
 ```{r label = "comparison-of-pressure"}
-DEVICES_FOR_COMPARISON <- c("Augusti psühromeeter", "Assmanni psühromeeter", "Pasco ilmajaam")
-
 gamma_natural_ventilated <- calculate_gamma(p_at, "natural ventilated")
 gamma_ventilated <- calculate_gamma(p_at, "ventilated")
 gamma_FOR_COMPARISON <- c(gamma_natural_ventilated, gamma_ventilated, gamma_ventilated)
@@ -268,7 +233,6 @@ librarian::shelf("MeTo")
 gamma_MeTo <- psyc_cons(elev = 10)
 
 DATA_FRAME_OF_COMPARISON <- data.frame(
-  DEVICES_FOR_COMPARISON,
   t_d,
   T_d,
   t_w,
@@ -320,7 +284,11 @@ DATA_FRAME_OF_COMPARISON <- data.frame(
   T_dew_FOR_COMPARISON_WITH_chart
 )
 
-DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
+rownames(DATA_FRAME_OF_COMPARISON) <- c(
+  "Augusti psühhomeeter",
+  "Assmanni psühhomeeter",
+  "\"Pasco\" ilmajaam"
+)
 
 footnote_1 <- footnote_marker_number(1)
 footnote_2 <- footnote_marker_number(2)
@@ -353,8 +321,7 @@ footnote_13_14_15 <- paste(footnote_13, footnote_14, footnote_15)
 footnote_1_2_4_10 <- paste(footnote_1_2_4, footnote_10)
 footnote_1_2_3_9_10 <- paste(footnote_1_2_3, footnote_9_10)
 
-rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
-  "Seade",
+colnames(DATA_FRAME_OF_COMPARISON) <- c(
   "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
   "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
   "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
@@ -406,25 +373,18 @@ rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- c(
   paste("$\\frac{T_\\text{dew}}{\\unit{\\kelvin}}$", footnote_18)
 )
 
-colnames(DATA_FRAME_OF_COMPARISON) <- c(
-  "Seade",
-  "$\\frac{t_\\text{d}}{\\unit{\\degreeCelsius}}$",
-  "$\\frac{T_\\text{d}}{\\unit{\\kelvin}}$",
-  "$\\frac{t_\\text{w}}{\\unit{\\degreeCelsius}}$",
-  "$\\frac{T_\\text{w}}{\\unit{\\kelvin}}$",
-  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_1),
-  paste("$\\frac{p_\\text{sat}}{\\unit{\\pascal}}$", footnote_2),
-  "$\\frac{\\gamma}{\\unit{\\pascal\\per\\kelvin}}$",
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1),
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_2),
-  paste("$\\frac{p_\\text{a}}{\\unit{\\pascal}}$", footnote_1_3)
-)
+DATA_FRAME_OF_COMPARISON_TRANSPOSED <- t(DATA_FRAME_OF_COMPARISON)
+
+rownames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- colnames(DATA_FRAME_OF_COMPARISON)
+colnames(DATA_FRAME_OF_COMPARISON_TRANSPOSED) <- rownames(DATA_FRAME_OF_COMPARISON)
 
 print_table(
   DATA_FRAME_OF_COMPARISON_TRANSPOSED,
   caption = "Psühhomeetrilised võrdlusandmed.",
   digits = 3
 ) %>%
+  column_spec(2, color = "red") %>%
+  column_spec(3, color = "teal") %>%
   footnote(number = c(
     "valem (ref:saturation-pressure-over-liquid-h2o)", # 1
     "valem (ref:saturation-pressure-in-inbook)", # 2
@@ -433,7 +393,7 @@ print_table(
     "valem (ref:psychrometric-coefficient-in-whipple)", # 5
     "valem (ref:psychrometric-coefficient)", # 6
     "valem (ref:psychrometric-coefficient-for-natural-ventilation)", # 7
-    "Katseliselt leidsin, et Pasco ilmajaamas kasutatakse tõenäoliselt Assmanni psühromeetri reeglistikku.", # 8
+    "Katseliselt leidsin, et Pasco ilmajaamas kasutatakse tõenäoliselt \\textcolor{teal}{Assmanni psühromeetri} reeglistikku.", # 8
     "valem (ref:partial-vapor-pressure-from-humidity-ratio)", # 9
     "valem (ref:relative-humidity-as-ratio-of-pressure)", # 10
     "valem (ref:dew-point-temperature)", # 11
@@ -448,4 +408,4 @@ print_table(
 
 ```
 
-*Pasco* ilmajaama puhul tegin katseliselt kindlaks, et kasutatakse Assmanni psühhomeetriakoefitsienti, sest loomuliku ventilatsiooni puhul vastavalt valemile \@ref(eq:psychrometric-coefficient-for-natural-ventilation) ja ventilatsioonita olukorras vastavalt valemile \@ref(eq:psychrometric-coefficient-without-ventilation) olnuks tegelik veeauru osarõhk sundventilatsiooniga osarõhust liiga erinev.
+*Pasco* ilmajaama puhul tegin katseliselt kindlaks, et kasutatakse \textcolor{teal}{Assmanni psühhomeetriakoefitsienti}, sest loomuliku ventilatsiooni puhul vastavalt valemile \@ref(eq:psychrometric-coefficient-for-natural-ventilation) leheküljel $\pageref{eq:psychrometric-coefficient-for-natural-ventilation}$ ja ventilatsioonita olukorras vastavalt valemile \@ref(eq:psychrometric-coefficient-without-ventilation) leheküljel $\pageref{eq:psychrometric-coefficient-without-ventilation}$ olnuks tegelik veeauru osarõhk sundventilatsiooniga osarõhust liiga erinev.

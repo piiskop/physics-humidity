@@ -4,7 +4,7 @@
 
 2. statsionaarne pühhomeeter,
 
-3. läikiva välispinnag ametallist õõneskera statiivil,
+3. läikiva välispinnaga ametallist õõneskera statiivil,
 
 4. temperatuurisensor,
 

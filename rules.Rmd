@@ -152,9 +152,6 @@ p_\text{sat} := 610.8 \times e^\frac{17.27 \times (T - \qty{`r T_0`}{\kelvin})}{
 
 ```
 
-Tegeliku rõhu arvutamiseks saab samuti kasutada nii valemit \@ref(eq:saturation-pressure-over-liquid-h2o) kui \@ref(eq:saturation-pressure-in-inbook), kui on teada kastepunkt.
-
-
 ## Energia, töö, soojushulk
 
 
@@ -410,7 +407,7 @@ ggplot(data = CO2_in_air, aes(x = time_decimal, y = value)) + geom_point() +
 ```
 
 
-Õhu molaarmassi võib võtta teatmikust, aga võib ka õhu koostisosade molaarmasside põhjal ise arvutada, et näha, millest õhu molaarmass koosneb. [@haynes_2014_crc, p. 6-164] põhjal esinevad lämmastik, hapnik ja vesinik kaksikaatomist koosneva lihtainena. Õhu koostis on üldiselt püsiv, kuid seda mõjutab süsihappe gaasi poolt hapniku asendamine. Viimast 
+Õhu molaarmassi võib võtta teatmikust, aga võib ka õhu koostisosade molaarmasside põhjal ise arvutada, et näha, millest õhu molaarmass koosneb. [@haynes_2014_crc, p. 6-164] põhjal esinevad lämmastik, hapnik ja vesinik kaksikaatomist koosneva lihtainena.
 
 (ref:m-trace-citation) @RN23688432420080101, p. 4
 
@@ -492,9 +489,7 @@ librarian::shelf(
   "kableExtra"
 )
 
-
 composition_of_air <- arrange(composition_of_air, desc(`Osalus molaarmassis $\\frac{M \\cdot \\psi}{\\unit{\\milli\\gram\\per\\mole}}$`))
-
 
 composition_of_air[NUMBER_OF_COMPONENTS + 1, ] <- c(
   "ülejäänud jälgained",
@@ -502,13 +497,8 @@ composition_of_air[NUMBER_OF_COMPONENTS + 1, ] <- c(
   psi_trace,
   mean_trace * psi_trace
 )
-print(mean_trace)
-print(psi_trace)
-print(mean_trace * psi_trace)
-print(length(M))
-print(nrow(composition_of_air))
-composition_of_air[, 2:4] <- as.numeric(unlist(composition_of_air[, 2:4]))
 
+composition_of_air[, 2:4] <- as.numeric(unlist(composition_of_air[, 2:4]))
 
 composition_of_air_with_totals <- adorn_totals(dat = composition_of_air, name = "Kokku", where = "row", fill = "", na.rm = TRUE, c(3, 4))
 M_air_2008 <- 28.965369e-3
@@ -630,7 +620,7 @@ milles $c_p$ on õhu erisoojus, $\lambda$ on vee aurustumissoojus [@haynes_2014_
 \end{align}
 ```
 
-millest johtuvalt on ühik $\unit{\kilogram\per\meter\per\second\squared\per\kelvin}$ ehk lühemalt $\unit{\pascal\per\kelvin}$. Psühromeetriline tegur on erinev sõltuvalt sellest, kas psühhomeeter on ventileeritud ja kuidas see on ventileeritud. Valem \@ref(eq:psychrometric-coefficient) kehtib automaatselt ventileeritud psühhomeetri kasutamise puhul, milles õhk liigub umbes $\qty{5}{\meter\per\second}$ nagu nt Assmanni psühhomeetris. Loomuliku ventilatsiooniga psühhomeetri puhul, milles õhk liigub umbes  $\qty{1}{\meter\per\second}$, soovitatakse [@inbook, p. 38] kasutada valemit
+millest johtuvalt on ühik $\unit{\kilogram\per\meter\per\second\squared\per\kelvin}$ ehk lühemalt $\unit{\pascal\per\kelvin}$. Psühromeetriline tegur on erinev sõltuvalt sellest, kas psühhomeeter on ventileeritud ja kuidas see on ventileeritud. Valem \@ref(eq:psychrometric-coefficient) kehtib automaatselt ventileeritud psühhomeetri kasutamise puhul, milles õhk liigub umbes $\qty{5}{\meter\per\second}$ nagu nt \textcolor{teal}{Assmanni psühhomeetris}. Loomuliku ventilatsiooniga psühhomeetri puhul, milles õhk liigub umbes  $\qty{1}{\meter\per\second}$, soovitatakse [@inbook, p. 38] kasutada valemit
 
 ```{=tex}
 \begin{align}
@@ -808,7 +798,11 @@ colnames(density_of_saturated_H2O) <- c(
   "$\\frac{\\text{Küllastava veeauru tihedus}}{\\unit{\\kilogram\\per\\cubic\\meter}}$"
 )
 
-print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihedused vahemikus", T_min, "$\\times \\unit{\\kelvin}$ kuni",  T_max, "$\\times \\unit{\\kelvin}$."), digits = 5)
+print_table(density_of_saturated_H2O, caption = paste("Küllastava veeauru tihedused vahemikus", T_min, "$\\times \\unit{\\kelvin}$ kuni",  T_max, "$\\times \\unit{\\kelvin}$."), digits = 5) %>%
+  row_spec(which(t == 24.0), color = "red") %>%
+  row_spec(which(t == 23.6), color = "teal") %>%
+  row_spec(which(t == 16.5), color = "red") %>%
+  row_spec(which(t == 15.2), color = "teal")
 
 
 ```
@@ -898,7 +892,7 @@ calculate_W_saturated <- function(T_d, method) {
 
 ```
 
-Absoluutne niiskuse suhe näitab, kui palju veeauru õhk teatud temperatuuril suudab mahutada. Kasutan absoluutse niiskuse suhte valemis molaarmassi valemit \@ref(eq:molar-mass) ja edasi ideaalse rõhu gaasi valemit \@ref(eq:pressure-of-ideal-gas):
+Absoluutne niiskuse suhe näitab, kui palju veeauru õhk teatud temperatuuril suudab mahutada. Kasutan absoluutse niiskuse suhte valemis molaarmassi valemit \@ref(eq:molar-mass) leheküljel $\pageref{eq:molar-mass}$ ja edasi ideaalse rõhu gaasi valemit \@ref(eq:pressure-of-ideal-gas) leheküljel $\pageref{eq:pressure-of-ideal-gas}$:
 
 ```{=tex}
 \begin{align}
@@ -936,7 +930,7 @@ Küllastusaste:
 \end{align}
 ``` 
 
-Avaldan kogurõhu niiskuse suhte valemist \@ref(eq:humidity-ratio):
+Avaldan kogurõhu niiskuse suhte valemist \@ref(eq:humidity-ratio) leheküljel $\pageref{eq:humidity-ratio}$:
 
 ```{=tex}
 \begin{align}
@@ -967,7 +961,7 @@ suhteline niiskus
 : õhus oleva veeauru osarõhu ja vee küllastusauru rõhu suhe samal 
 temperatuuril, väljendatud protsentides [@haynes_2014_crc, p. 2-63]
 
-Suhteline niiskus näitab, kui palju veeauru õhk maksimaalsest võimalikust teatud temperatuuril mahutab. Suhtelise niiskuse valem, millesse asendan massi molaarmassi valemist \@ref(eq:molar-mass), ainehulga ideaalse gaasi valemist \@ref(eq:pressure-of-ideal-gas) ja veeauru osarõhu selle valemist niiskuse suhte kaudu \@ref(eq:partial-vapor-pressure-from-humidity-ratio):
+Suhteline niiskus näitab, kui palju veeauru õhk maksimaalsest võimalikust teatud temperatuuril mahutab. Suhtelise niiskuse valem, millesse asendan massi molaarmassi valemist \@ref(eq:molar-mass) leheküljel $\pageref{eq:molar-mass}$, ainehulga ideaalse gaasi valemist \@ref(eq:pressure-of-ideal-gas) leheküljel $\pageref{eq:pressure-of-ideal-gas}$ ja veeauru osarõhu selle valemist niiskuse suhte kaudu \@ref(eq:partial-vapor-pressure-from-humidity-ratio) leheküljel $\pageref{eq:partial-vapor-pressure-from-humidity-ratio}$:
 
 ```{=tex}
 \begin{align}
@@ -996,9 +990,9 @@ calculate_RH <- function(p_dp, p_d_H2O) {
   return(p_dp / p_d_H2O)
 }
 
-t_d <- c(seq(10, 24, 1), seq(24.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
+t_d <- c(seq(10, 23, 1), seq(23.1, 27, .1), seq(28, 31, 1), seq(32, 48, 2), 49, seq(50, 200, 50))
 T_d <- GetTKelvinFromTCelsius(t_d)
-delta_T <- c(seq(1, 7, 1), seq(7.5, 9, .5), 9.4, 9.5, 10, 10.5, 10.8, 11, 12, 15)
+delta_T <- c(seq(1, 7, 1), 7.5, 8, 8.4, seq(8.5, 10.5, .5), 11, 12, 15)
 gamma_whipple <- calculate_gamma(p_at)
 
 calculate_RH_from_delta_T <- function(T_d, delta_T) {
@@ -1017,8 +1011,7 @@ calculate_RH_from_delta_T <- function(T_d, delta_T) {
       if (p_dp < 0) {
         RH <- c(RH, "")
       } else {
-        
-        RH <- c(RH, p_dp / p_d_H2O)
+        RH <- c(RH, calculate_RH(p_dp, p_d_H2O))
       }
       
     }
@@ -1035,6 +1028,13 @@ for (index in delta_T) {
   RH <- calculate_RH_from_delta_T(T_d = T_d, delta_T = index)
   RH_numeric <- as.numeric(RH)
   RH_T <- cbind(RH_T, ifelse(is.na(RH_numeric), "", round(RH_numeric * 100, digits = 1)))
+  
+  if (7.5 == delta_T[index]) {
+    delta_T[index] = paste("${\\color{red}", delta_T[index], "}$", sep = "")
+  } else if (8.4 == delta_T[index]) {
+    delta_T[index] = paste("${\\color{teal}", delta_T[index], "}$", sep = "")
+  }
+  
 }
 
 colnames(RH_T) <- c(
@@ -1042,8 +1042,12 @@ colnames(RH_T) <- c(
   delta_T
 )
 
+RH_T <- mutate(RH_T, "${\\color{red}7.5}$" = cell_spec(`${\\color{red}7.5}$`, color = ifelse(T_d == 297.15, "red", "black")))
+RH_T <- mutate(RH_T, "${\\color{teal}8.4}$" = cell_spec(`${\\color{teal}8.4}$`, color = ifelse(T_d == 296.75, "teal", "black")))
+RH_T <- mutate(RH_T, "$\\frac{T}{\\unit{\\kelvin}}$" = cell_spec(T_d, color = ifelse(T_d == 296.75, "teal", ifelse(T_d == 297.15, "red", "black"))))
+
 header_text <- c("Kuiva termomeetri näit", paste("Kuiva ja märja termomeetri näitude vahe $\\\\frac{\\\\Delta(T)}{\\\\unit{\\\\kelvin}}$"))
-header_span <- c(1, 19)
+header_span <- c(1, length(delta_T))
 header <- data.frame(header_text, header_span)
 
 print_table(
@@ -1139,7 +1143,7 @@ Kummagi termomeetri näidu erinevuse järgi saab Carrieri psühromeetriliselt di
 include_svg("0000Psych11x17US_SI_logos.pdf")
 ```
 
-Summaarne entalpia, millesse asendan entalpiad erientalpiatega valemist \@ref(eq:specific-enthalpy):
+Summaarne entalpia, millesse asendan entalpiad erientalpiatega valemist \@ref(eq:specific-enthalpy) leheküljel $\pageref{eq:specific-enthalpy}$:
 
 
 ```{=tex}
@@ -1149,7 +1153,7 @@ H :&= H_\text{d} + H_\text{w} = m_\text{d} \cdot h_\text{d} + m_\text{w} \cdot h
 \end{align}
 ``` 
 
-Avaldan summaarse entalpia valemist \@ref(eq:sum-of-enthalpy) erientalpia vastava valemi \@ref(eq:specific-enthalpy) alusel, asendan veeauru ja kuiva õhu massi jagatise niiskuse suhtega vastavast valemist \@ref(eq:humidity-ratio):
+Avaldan summaarse entalpia valemist \@ref(eq:sum-of-enthalpy) erientalpia vastava valemi \@ref(eq:specific-enthalpy) alusel, asendan veeauru ja kuiva õhu massi jagatise niiskuse suhtega vastavast valemist \@ref(eq:humidity-ratio) leheküljel $\pageref{eq:humidity-ratio}$:
 
 ```{=tex}
 \begin{align}
@@ -1188,9 +1192,9 @@ c_p \cdot (T_\text{d} - \qty{`r T_0`}{\kelvin}) + W \cdot h_\text{w}(\text{in}) 
 
 Juhin erilist tähelepanu valemile \@ref(eq:energy-balance) ja selles temperatuuride muutudele. Ainel pole sellist omadust nagu entalpia, sest entalpia tähendab soojushulga muutu vastavalt temperatuurimuudule. Sellised muudud on välja arvutatud eksperimentaalselt ja nendest on koostatud tabelid. Kui küsitav suurus on entalpia mingi temperatuuri korral, siis see ei tähenda füüsikaliselt, et sellel ainel on mingi fikseeritud entalpia selle temperatuuri korral. See tähendab hoopis, et selle ja temperatuuri $\qty{`r T_0`}{K}$ vahele vastab entalpia muut, mis on selle temperatuuri kohta märgitud entalpia ja nullentalpia vahe, kui nullentalpiale vastab nagu minu näites $\qty{`r T_0`}{K}$. Kuna nulli lahutamine tulemust ei muuda, siis seetõttu kasutatakse valemis vahel temperatuuride muudu asemel ainult lõpptemperatuuri, mille ühik on $\unit{\degreeCelsius}$. [@reference]
 
-Referentstemperatuur on $\qty{`r T_0`}{K}$ [@American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, pp. 8 to 10] esimese peatüki teises tabelis, milles on eraldi välja toodud kuiva õhu entalpia. Referentstemperatuur on hoopis muu [@haynes_2014_crc, p. 6-17] ja selle tabeli põhjal saab entalpia muudu kätte kahe temperatuuri entalpiate vahena või korrutades temperatuurimuudu algtemperatuuri soojusmahtuvuse väärtusega.
+Referentstemperatuur on $\qty{`r T_0`}{K}$ @American_Society_of_Heating_Refrigerating_and_Air-Conditioning_Engineers2017-im, pp. 8 to 10 esimese peatüki teises tabelis, milles on eraldi välja toodud kuiva õhu entalpia. Referentstemperatuur on hoopis muu @haynes_2014_crc, p. 6-17 ja selle tabeli põhjal saab entalpia muudu kätte kahe temperatuuri entalpiate vahena või korrutades temperatuurimuudu algtemperatuuri soojusmahtuvuse väärtusega.
 
-Kirjutan energia tasakaalu valemi \@ref(eq:energy-balance) lahti:
+Kirjutan energia tasakaalu valemi \@ref(eq:energy-balance) leheküljel $\pageref{eq:energy-balance}$ lahti:
 
 ```{=tex}
 \begin{align}
@@ -1200,8 +1204,7 @@ c_p \cdot (T_d - \qty{`r T_0`}{\kelvin}) + W \cdot h_\text{w}(\text{in}) + W_\te
 \end{align}
 ```
 
-Avaldan laiendatud energia tasakaalu valemist \@ref(eq:energy-balance-expanded) niiskuse suhte, millesse asendan aurustumissoojuse vastavast valemist \@ref(eq:enthalpy-of-vaporization) leheküljel $\pageref{eq:enthalpy-of-vaporization}$ kasutades erientalpia valemit \@ref(eq:specific-enthalpy):
-
+Avaldan laiendatud energia tasakaalu valemist \@ref(eq:energy-balance-expanded) niiskuse suhte, millesse asendan aurustumissoojuse vastavast valemist \@ref(eq:enthalpy-of-vaporization) leheküljel $\pageref{eq:enthalpy-of-vaporization}$ kasutades erientalpia valemit \@ref(eq:specific-enthalpy) leheküljel $\pageref{eq:specific-enthalpy}$:
 
 ```{=tex}
 \begin{align}
@@ -1213,7 +1216,7 @@ W :&= \frac{c_p \cdot (T_\text{out} - T_\text{d}) + W_\text{out} \cdot \Delta_\t
 \end{align}
 ```
 
-Selgitan niiskuse suhte valemi \@ref(eq:humidity-ratio-from-energy-balance) osi:
+Selgitan niiskuse suhte valemi \@ref(eq:humidity-ratio-from-energy-balance) leheküljel $\pageref{eq:humidity-ratio-from-energy-balance}$ osi:
 
 ```{=tex}
 \begin{align}
@@ -1223,8 +1226,6 @@ Selgitan niiskuse suhte valemi \@ref(eq:humidity-ratio-from-energy-balance) osi:
 ``` 
 
 [@difference].
-
-Olin tükk aega kimpus, millist soojusmahtuvuse väärtust kasutada, kui see sõltub temperatuurist.
 
 Adiabaatilises protsessis küllastusentalpia:
 
@@ -1307,7 +1308,8 @@ Avaldan küllastusentalpia valemist \@ref(eq:enthalpy-of-saturated-air) lehekül
 &= c_p(\text{d}) \times (T_\text{w} - T_\text{d}) + W_\text{sat} \times (\Delta_\text{vap}(h) + c_p(\text{sat, w}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, l}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}))\\
 &W := \frac{c_p(\text{d}) \times (T_\text{w} - T_\text{d}) + W_\text{sat} \times (\Delta_\text{vap}(h) + c_p(\text{sat, w}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, l}) \times t_\text{w}}{\Delta_\text{vap}(h) + c_p(\text{sat, w}) \times (T_\text{d} - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, l}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin})}\\
 &W := \frac{c_p(\text{d}) \times (T_\text{w} - T_\text{d}) + W_\text{sat} \times (\Delta_\text{vap}(h) + (c_p(\text{sat, w}) - c_p(\text{sat, l})) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}))}{\Delta_\text{vap}(h) + c_p(\text{sat, w}) \times (T_\text{d} - \qty{`r T_0`}{\kelvin}) - c_p(\text{sat, l}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin})}\\
-&W := \frac{\qty{`r c_p_d`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - T_\text{d}) + W_\text{sat} \times (`r delta_vap_h` \times \unit{\joule\per\kilogram} + (\qty{`r c_p_sat_w`}{\joule\per\kilogram\per\kelvin} - \qty{`r c_p_sat_l`}{\joule\per\kilogram\per\kelvin}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}))}{`r delta_vap_h` \times \unit{\joule\per\kilogram} + \qty{`r c_p_sat_w`}{\joule\per\kilogram\per\kelvin} \times (T_\text{d} - \qty{`r T_0`}{\kelvin}) - \qty{`r c_p_sat_l`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - \qty{`r T_0`}{\kelvin})}\\
+&W\\
+&:= \frac{\qty{`r c_p_d`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - T_\text{d}) + W_\text{sat} \times (`r delta_vap_h` \times \unit{\joule\per\kilogram} + (\qty{`r c_p_sat_w`}{\joule\per\kilogram\per\kelvin} - \qty{`r c_p_sat_l`}{\joule\per\kilogram\per\kelvin}) \times (T_\text{w} - \qty{`r T_0`}{\kelvin}))}{`r delta_vap_h` \times \unit{\joule\per\kilogram} + \qty{`r c_p_sat_w`}{\joule\per\kilogram\per\kelvin} \times (T_\text{d} - \qty{`r T_0`}{\kelvin}) - \qty{`r c_p_sat_l`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - \qty{`r T_0`}{\kelvin})}\\
 &W := \frac{W_\text{sat} \times (`r delta_vap_h` \times \unit{\joule\per\kilogram} + \qty{`r c_p_sat`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - \qty{`r T_0`}{\kelvin})) - \qty{`r c_p_d`}{\joule\per\kilogram\per\kelvin} \times (T_\text{d} - T_\text{w})}{`r delta_vap_h` \times \unit{\joule\per\kilogram} + \qty{`r c_p_sat_w`}{\joule\per\kilogram\per\kelvin} \times (T_\text{d} - \qty{`r T_0`}{\kelvin}) - \qty{`r c_p_sat_l`}{\joule\per\kilogram\per\kelvin} \times (T_\text{w} - \qty{`r T_0`}{\kelvin})}
 (\#eq:humidity-ratio-using-enthalpies)
 \end{align}
@@ -1319,7 +1321,7 @@ Avaldan küllastusentalpia valemist \@ref(eq:enthalpy-of-saturated-air) lehekül
 \end{landscape}
 ```
 
-Korraldan kogurõhu valemis \@ref(eq:total-pressure) asju ümber ning asendan uude valemisse suhtelise niiskuse valemist \@ref(eq:relative-humidity-as-ratio-of-pressure) ja küllastusastme valemist \@ref(eq:degree-of-saturation), misjärel asendan niiskuse suhte küllastusastme valemist ja avaldan küllastusastme:
+Korraldan kogurõhu valemis \@ref(eq:total-pressure) leheküljel $\pageref{eq:total-pressure}$ asju ümber ning asendan uude valemisse suhtelise niiskuse valemist \@ref(eq:relative-humidity-as-ratio-of-pressure) leheküljel $\pageref{eq:relative-humidity-as-ratio-of-pressure}$ ja küllastusastme valemist \@ref(eq:degree-of-saturation) leheküljel $\pageref{eq:degree-of-saturation}$, misjärel asendan niiskuse suhte küllastusastme valemist ja avaldan küllastusastme:
 
 ```{=tex}
 \begin{align}
@@ -1339,7 +1341,7 @@ RH \times \mu \times W_\text{sat} - \mu \times (`r M_w_TO_M_d` + W_\text{sat}) &
 
 [@numerically-degree-of-saturation].
 
-Kirjutan niiskuse suhte põhivalemi \@ref(eq:humidity-ratio) veidi ümber ja teen vastava asenduse küllastusastme valemisse \@ref(eq:degree-of-saturation-from-pressure), misjärel avaldan tulemusest suhtelise niiskuse:
+Kirjutan niiskuse suhte põhivalemi \@ref(eq:humidity-ratio) leheküljel $\pageref{eq:humidity-ratio}$ veidi ümber ja teen vastava asenduse küllastusastme valemisse \@ref(eq:degree-of-saturation-from-pressure), misjärel avaldan tulemusest suhtelise niiskuse:
 
 ```{=tex}
 \begin{align}
@@ -1388,11 +1390,9 @@ calculate_Tdp <- function(T_d, T_w, method_for_dew, method_for_p, gamma = NULL) 
     }
 
     p_w <- calculate_p_a(p_sat, gamma, T_d, T_w) / 1e3
-    print(p_w)
     alpha <- log(p_w)
     T_dew <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
   } else if ("with psychrometer" == method_for_dew) {
-    # gamma <- calculate_gamma(p_at, type_of_psychrometer = type_of_psychrometer)
     
     if (is.null(gamma)) {
       gamma <- calculate_gamma(p_at)
@@ -1401,7 +1401,6 @@ calculate_Tdp <- function(T_d, T_w, method_for_dew, method_for_p, gamma = NULL) 
     p_sat_at_T_w <- calculate_p_sat(T_w, method = method_for_p)
     T_dew <- (112 + .9*(T_w - T_0)) * (calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) / p_sat_at_T_w)^(1/8) - 112 + .1 * (T_w - T_0)
   } else if ("without psychrometer" == method_for_dew) {
-    # gamma <- calculate_gamma(p_at, type_of_psychrometer = type_of_psychrometer)
     
     if (is.null(gamma)) {
       gamma <- calculate_gamma(p_at)
@@ -1415,31 +1414,6 @@ calculate_Tdp <- function(T_d, T_w, method_for_dew, method_for_p, gamma = NULL) 
   }
 
   return(signif(T_dew + T_0, digits = 5))
-}
-
-calculate_trash <- function(T_d, T_w) {
-  gamma <- calculate_gamma(p_at)
-  p_sat_at_T_w <- calculate_p_sat(T_w, method = "ASHRAE")
-  return((112 + .9 * (T_w - T_0)) * (calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) / p_sat_at_T_w)^(1 / 8) - 112 + .1 * (T_w - T_0))
-}
-
-calculate_more_trash <- function(T_d, T_w) {
-  gamma <- calculate_gamma(p_at)
-  p_sat_at_T_w <- calculate_p_sat(T_w, method = "FAO")
-  return((116.91 + 237.3 * log(calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) * 1e-3)) / (16.78 - log(calculate_p_a(p_sat_at_T_w, gamma, T_d, T_w) * 1e-3)))
-}
-
-calculate_some_trash <- function(T_d, T_w) {
-  W <- calculate_W(T_d, T_w, method = "ASHRAE")
-  p_w <- calculate_P_from_W(W) / 1e3
-  print(p_w)
-  p_sat <- calculate_p_sat(T_d, method = "FAO")
-  print(p_sat)
-  p_w <- calculate_p_a(p_sat, calculate_gamma(p_at), T_d, T_w) / 1e3
-  print(p_w)
-  alpha <- log(p_w)
-  T_dp <- 6.54 + 14.526 * alpha + .7389 * alpha^2 + .09486 * alpha^3 + .4569 * p_w^.1984
-  return(T_dp)
 }
 
 ```
@@ -1506,7 +1480,7 @@ M_d_TO_M_w <- 1 / M_w_TO_M_d
 
 ```
 
-Asendan niiske õhu segu eriruumala põhivalemisse \@ref(eq:specific-volume) massi ainehulga valemist \@ref(eq:molar-mass) leheküljel $\pageref{eq:molar-mass}$, molaarmassi ideaalse gaasi konstandi ja kuiva õhu gaasikonstandi jagatisega gaasi erikonstandi valemist \@ref(eq:specific-gas-constant) leheküljel $\pageref{eq:specific-gas-constant}$, ainehulga ideaalse gaasi rõhu valemist \@ref(eq:pressure-of-ideal-gas) leheküljel $\pageref{eq:pressure-of-ideal-gas}$, veeauru osarõhu vastavast niiskuse suhte valemist \@ref(eq:partial-vapor-pressure-from-humidity-ratio) leheküljel $\pageref{eq:partial-vapor-pressure-from-humidity-ratio}$:
+Asendan niiske õhu segu eriruumala põhivalemisse \@ref(eq:specific-volume) leheküljel $\pageref{eq:specific-volume}$ massi ainehulga valemist \@ref(eq:molar-mass) leheküljel $\pageref{eq:molar-mass}$, molaarmassi ideaalse gaasi konstandi ja kuiva õhu gaasikonstandi jagatisega gaasi erikonstandi valemist \@ref(eq:specific-gas-constant) leheküljel $\pageref{eq:specific-gas-constant}$, ainehulga ideaalse gaasi rõhu valemist \@ref(eq:pressure-of-ideal-gas) leheküljel $\pageref{eq:pressure-of-ideal-gas}$, veeauru osarõhu vastavast niiskuse suhte valemist \@ref(eq:partial-vapor-pressure-from-humidity-ratio) leheküljel $\pageref{eq:partial-vapor-pressure-from-humidity-ratio}$:
 
 ```{=tex}
 \begin{align}
